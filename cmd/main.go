@@ -39,6 +39,9 @@ func init() {
 			fmt.Println("Failed to initialize proxy instance from environment variables. Please either set the config path or set the environment variables.")
 			return
 		}
+		defer func() {
+			err = os.Remove(instance.UnixSocketPath)
+		}()
 		config = lbproxy.ProxyConfig{Instances: []lbproxy.ProxyInstance{*instance}}
 	} else {
 		configFile, err := os.ReadFile(configJSONPath)

@@ -44,9 +44,6 @@ func NewBucketingProxyInstance(instance ProxyInstance) (err error) {
 		}
 		go r.RunUnix(instance.UnixSocketPath)
 		fmt.Println("Running on unix socket: " + instance.UnixSocketPath)
-		defer func() {
-			err = os.Remove(instance.UnixSocketPath)
-		}()
 	}
 	return nil
 }

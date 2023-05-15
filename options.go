@@ -31,6 +31,29 @@ type ProxyInstance struct {
 	SDKConfig         SDKConfig             `json:"sdkConfig"`
 }
 
+func (i *ProxyInstance) BuildDevCycleOptions() *devcycle.Options {
+	options := devcycle.Options{
+		EnableEdgeDB:                 false,
+		EnableCloudBucketing:         false,
+		EventFlushIntervalMS:         i.SDKConfig.EventFlushIntervalMS,
+		ConfigPollingIntervalMS:      i.SDKConfig.ConfigPollingIntervalMS,
+		RequestTimeout:               i.SDKConfig.RequestTimeout,
+		DisableAutomaticEventLogging: i.SDKConfig.DisableAutomaticEventLogging,
+		DisableCustomEventLogging:    i.SDKConfig.DisableCustomEventLogging,
+		MaxEventQueueSize:            i.SDKConfig.MaxEventQueueSize,
+		FlushEventQueueSize:          i.SDKConfig.FlushEventQueueSize,
+		ConfigCDNURI:                 i.SDKConfig.ConfigCDNURI,
+		EventsAPIURI:                 i.SDKConfig.EventsAPIURI,
+		Logger:                       nil,
+		UseDebugWASM:                 false,
+		AdvancedOptions: devcycle.AdvancedOptions{
+			OverridePlatformData: &i.PlatformData,
+		},
+	}
+	options.CheckDefaults()
+	return &options
+}
+
 func (i *ProxyInstance) Default() {
 	i.SDKConfig.Default()
 	if i.HTTPEnabled && i.HTTPPort == 0 {

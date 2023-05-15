@@ -14,6 +14,7 @@ func NewBucketingProxyInstance(instance ProxyInstance) (err error) {
 			OverridePlatformData: &instance.PlatformData,
 		},
 	}
+	options.CheckDefaults()
 	client, err := devcycle.NewClient(instance.SDKKey, &options)
 	if err != nil {
 		return

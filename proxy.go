@@ -8,13 +8,13 @@ import (
 	"strconv"
 )
 
-func NewBucketingProxyInstance(instance ProxyInstance) (err error) {
+func NewBucketingProxyInstance(instance ProxyInstance) (*ProxyInstance, error) {
 	options := instance.BuildDevCycleOptions()
 	client, err := devcycle.NewClient(instance.SDKKey, options)
 	if err != nil {
-		return
+		return nil, err
 	}
-
+	instance.dvcClient = client
 	r := gin.New()
 	r.Use(gin.Logger())
 	r.Use(gin.Recovery())
@@ -29,17 +29,17 @@ func NewBucketingProxyInstance(instance ProxyInstance) (err error) {
 	}
 	if instance.HTTPEnabled {
 		if instance.HTTPPort == 0 {
-			return fmt.Errorf("HTTP port must be set")
+			return nil, fmt.Errorf("HTTP port must be set")
 		}
 		go r.Run(":" + strconv.Itoa(instance.HTTPPort))
 		fmt.Println("HTTP server started on port " + strconv.Itoa(instance.HTTPPort))
 	}
 	if instance.UnixSocketEnabled {
 		if _, err := os.Stat(instance.UnixSocketPath); err == nil {
-			return fmt.Errorf("unix socket path %s already exists. Skipping instance creation", instance.UnixSocketPath)
+			return nil, fmt.Errorf("unix socket path %s already exists. Skipping instance creation", instance.UnixSocketPath)
 		}
 		go r.RunUnix(instance.UnixSocketPath)
 		fmt.Println("Running on unix socket: " + instance.UnixSocketPath)
 	}
-	return nil
+	return &instance, nil
 }

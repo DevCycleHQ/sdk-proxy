@@ -29,6 +29,11 @@ type ProxyInstance struct {
 	SDKKey            string                `json:"sdkKey"`
 	PlatformData      devcycle.PlatformData `json:"platformData"`
 	SDKConfig         SDKConfig             `json:"sdkConfig"`
+	dvcClient         *devcycle.Client
+}
+
+func (i *ProxyInstance) Close() error {
+	return i.dvcClient.Close()
 }
 
 func (i *ProxyInstance) BuildDevCycleOptions() *devcycle.Options {

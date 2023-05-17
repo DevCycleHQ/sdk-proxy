@@ -87,6 +87,7 @@ func getUserFromBody(c *gin.Context) *devcycle.User {
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
 			"message":    "Missing JSON body",
+			"exception":  err.Error(),
 			"statusCode": http.StatusBadRequest,
 		})
 		return nil
@@ -95,7 +96,9 @@ func getUserFromBody(c *gin.Context) *devcycle.User {
 	err = json.Unmarshal(jsonBody, &user)
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
-			"message":    "Invalid JSON body",
+			"message":   "Invalid JSON body",
+			"exception": err.Error(),
+
 			"statusCode": http.StatusBadRequest,
 		})
 		return nil
@@ -103,7 +106,8 @@ func getUserFromBody(c *gin.Context) *devcycle.User {
 	return &user
 }
 
-func getEventFromBody(c *gin.Context) (req *devcycle.UserDataAndEventsBody) {
+func getEventFromBody(c *gin.Context) *devcycle.UserDataAndEventsBody {
+	var event devcycle.UserDataAndEventsBody
 	jsonBody, err := io.ReadAll(c.Request.Body)
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
@@ -112,13 +116,14 @@ func getEventFromBody(c *gin.Context) (req *devcycle.UserDataAndEventsBody) {
 		})
 		return nil
 	}
-	err = json.Unmarshal(jsonBody, req)
+	err = json.Unmarshal(jsonBody, &event)
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
 			"message":    "Invalid JSON body",
+			"exception":  err.Error(),
 			"statusCode": http.StatusBadRequest,
 		})
 		return nil
 	}
-	return req
+	return &event
 }

@@ -10,10 +10,7 @@ import (
 
 func NewBucketingProxyInstance(instance ProxyInstance) (*ProxyInstance, error) {
 	options := instance.BuildDevCycleOptions()
-	client, err := devcycle.NewClient(instance.SDKKey, options)
-	if err != nil {
-		return nil, err
-	}
+	client, _ := devcycle.NewClient(instance.SDKKey, options)
 	instance.dvcClient = client
 	r := gin.New()
 	r.Use(gin.Logger())

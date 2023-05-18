@@ -101,7 +101,7 @@ func main() {
 	// Create router for each instance
 	for _, instance := range config.Instances {
 		// Create client
-		err := lbproxy.NewBucketingProxyInstance(instance)
+		_, err := lbproxy.NewBucketingProxyInstance(instance)
 		if err != nil {
 			fmt.Println(err)
 			return

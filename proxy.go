@@ -10,7 +10,7 @@ import (
 
 func NewBucketingProxyInstance(instance ProxyInstance) (*ProxyInstance, error) {
 	options := instance.BuildDevCycleOptions()
-	client, _ := devcycle.NewClient(instance.SDKKey, options)
+	client, err := devcycle.NewClient(instance.SDKKey, options)
 	instance.dvcClient = client
 	r := gin.New()
 	r.Use(gin.Logger())
@@ -38,5 +38,5 @@ func NewBucketingProxyInstance(instance ProxyInstance) (*ProxyInstance, error) {
 		go r.RunUnix(instance.UnixSocketPath)
 		fmt.Println("Running on unix socket: " + instance.UnixSocketPath)
 	}
-	return &instance, nil
+	return &instance, err
 }

@@ -3,7 +3,7 @@ module github.com/devcyclehq/local-bucketing-proxy
 go 1.19
 
 require (
-	github.com/devcyclehq/go-server-sdk/v2 v2.9.7-0.20230503141249-05a8cad604f1
+	github.com/devcyclehq/go-server-sdk/v2 v2.10.2-0.20230523174649-ac81890e76db
 	github.com/gin-gonic/gin v1.8.2
 )
 
@@ -26,6 +26,7 @@ require (
 	github.com/modern-go/reflect2 v1.0.2 // indirect
 	github.com/pelletier/go-toml/v2 v2.0.6 // indirect
 	github.com/spaolacci/murmur3 v1.1.0 // indirect
+	github.com/twmb/murmur3 v1.1.7 // indirect
 	github.com/ugorji/go/codec v1.2.7 // indirect
 	golang.org/x/crypto v0.7.0 // indirect
 	golang.org/x/exp v0.0.0-20230321023759-10a507213a29 // indirect

@@ -10,25 +10,25 @@ type ProxyConfig struct {
 }
 
 type SDKConfig struct {
-	EventFlushIntervalMS         time.Duration `json:"eventFlushIntervalMS,omitempty"`
-	ConfigPollingIntervalMS      time.Duration `json:"configPollingIntervalMS,omitempty"`
-	RequestTimeout               time.Duration `json:"requestTimeout,omitempty"`
-	DisableAutomaticEventLogging bool          `json:"disableAutomaticEventLogging,omitempty"`
-	DisableCustomEventLogging    bool          `json:"disableCustomEventLogging,omitempty"`
-	MaxEventQueueSize            int           `json:"maxEventsPerFlush,omitempty"`
-	FlushEventQueueSize          int           `json:"minEventsPerFlush,omitempty"`
-	ConfigCDNURI                 string
-	EventsAPIURI                 string
+	EventFlushIntervalMS         time.Duration `json:"eventFlushIntervalMS,omitempty" split_words:"true" desc:"The interval at which events are flushed to the events api in milliseconds."`
+	ConfigPollingIntervalMS      time.Duration `json:"configPollingIntervalMS,omitempty" split_words:"true" desc:"The interval at which the SDK polls the config CDN for updates in milliseconds."`
+	RequestTimeout               time.Duration `json:"requestTimeout,omitempty" split_words:"true" desc:"The timeout for requests to the config CDN and events API in milliseconds."`
+	DisableAutomaticEventLogging bool          `json:"disableAutomaticEventLogging,omitempty" split_words:"true" default:"false" desc:"Whether to disable automatic event logging. Defaults to false."`
+	DisableCustomEventLogging    bool          `json:"disableCustomEventLogging,omitempty" split_words:"true" default:"false" desc:"Whether to disable custom event logging. Defaults to false."`
+	MaxEventQueueSize            int           `json:"maxEventsPerFlush,omitempty" split_words:"true" desc:"The maximum number of events to be in the queue before dropping events."`
+	FlushEventQueueSize          int           `json:"minEventsPerFlush,omitempty" split_words:"true" desc:"The minimum number of events to be in the queue before flushing events."`
+	ConfigCDNURI                 string        `json:"configCDNURI,omitempty" envconfig:"CONFIG_CDN_URI" desc:"The URI of the Config CDN - leave unspecified if not needing an outbound proxy."`
+	EventsAPIURI                 string        `json:"eventsAPIURI,omitempty" envconvig:"EVENTS_API_URI" desc:"The URI of the Events API - leave unspecified if not needing an outbound proxy."`
 }
 
 type ProxyInstance struct {
-	UnixSocketPath    string                `json:"unixSocketPath"`
-	HTTPPort          int                   `json:"httpPort"`
-	UnixSocketEnabled bool                  `json:"unixSocketEnabled"`
-	HTTPEnabled       bool                  `json:"httpEnabled"`
-	SDKKey            string                `json:"sdkKey"`
-	PlatformData      devcycle.PlatformData `json:"platformData"`
-	SDKConfig         SDKConfig             `json:"sdkConfig"`
+	UnixSocketPath    string                `json:"unixSocketPath" envconfig:"UNIX_SOCKET_PATH" desc:"The path to the Unix socket."`
+	HTTPPort          int                   `json:"httpPort" envconfig:"HTTP_PORT" default:"8080" desc:"The port to listen on for HTTP requests. Defaults to 8080."`
+	UnixSocketEnabled bool                  `json:"unixSocketEnabled" envconfig:"UNIX_SOCKET_ENABLED" default:"false" desc:"Whether to enable the Unix socket. Defaults to false."`
+	HTTPEnabled       bool                  `json:"httpEnabled" envconfig:"HTTP_ENABLED" default:"true" desc:"Whether to enable the HTTP server. Defaults to true."`
+	SDKKey            string                `json:"sdkKey" required:"true" envconfig:"SDK_KEY" desc:"The Server SDK key to use for this instance."`
+	PlatformData      devcycle.PlatformData `json:"platformData" required:"true"`
+	SDKConfig         SDKConfig             `json:"sdkConfig" required:"true"`
 	dvcClient         *devcycle.Client
 }
 

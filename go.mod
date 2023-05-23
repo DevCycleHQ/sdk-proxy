@@ -3,7 +3,7 @@ module github.com/devcyclehq/local-bucketing-proxy
 go 1.19
 
 require (
-	github.com/devcyclehq/go-server-sdk/v2 v2.10.2-0.20230523174649-ac81890e76db
+	github.com/devcyclehq/go-server-sdk/v2 v2.10.2
 	github.com/gin-gonic/gin v1.8.2
 )
 

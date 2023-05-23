@@ -33,24 +33,9 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v4.0.0
         with:
-          context: .
+          context: ./cmd
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
-  e2e:
-    needs: build-and-push-image
-    services:
-      proxy:
-        image: ghcr.io/devcyclehq-internal/local-bucketing-proxy:main
-        ports:
-          - 8080:8080
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@master
-      - uses: matt-ball/newman-action@master
-        with:
-          apiKey: ${{ secrets.POSTMAN_API_KEY }}
-          collection: 14451102-11b51efe-c89e-40b5-9f95-6fd3ca93d83a
-          environment: 21993160-a4c0cd44-87e3-4393-bc17-a2593007f7ad

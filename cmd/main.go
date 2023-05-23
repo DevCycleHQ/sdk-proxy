@@ -18,7 +18,6 @@ import (
 var (
 	configJSONPath string
 	config         lbproxy.ProxyConfig
-	printVersion   bool
 )
 
 const (

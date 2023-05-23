@@ -1,5 +1,5 @@
 FROM golang:1.19-alpine
+ENV CGOENABLED=0
 RUN apk add --no-cache git
 RUN go install github.com/devcyclehq/local-bucketing-proxy/cmd@latest
-EXPOSE 8080
-ENTRYPOINT ["/go/bin/local-bucketing-proxy"]
+ENTRYPOINT ["/go/bin/cmd"]

@@ -20,7 +20,11 @@ as well.
 
 ### Docker
 
-Please note that the docker container image in the repo is not the official one, and is only used for testing purposes.
+The docker image published here is the base runtime version - expecting to be used as a base image for you to extend.
+The docker image expects that you use the environment variables to configure the proxy, but can be modified and extended to use a configuration
+file instead. 
+
+We also provide the raw application binary to wrap in your own daemon manager, or tie into your existing application lifecycle.
 
 ## Options
 

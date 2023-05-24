@@ -7,7 +7,10 @@ before:
     # you may remove this if you don't need go generate
     - go generate ./...
 builds:
-  - env:
+   -
+    id: lb-proxy
+    main: ./cmd
+    env:
       - CGO_ENABLED=0
     goos:
       - linux
@@ -150,7 +153,7 @@ nfpms:
     #
     # Experimental.
     # Since: v1.11
-    changelog: ./foo.yml
+    #changelog: ./foo.yml
 
     # Contents to add to the package.
     # GoReleaser will automatically add the binaries.
@@ -167,73 +170,6 @@ nfpms:
     # Since: v1.17 (pro)
     # This feature is only available in GoReleaser Pro.
     # Templates: allowed
-    files:
-      # a more complete example, check the globbing deep dive below
-      - src: 'LICENSE.md.tpl'
-        dst: LICENSE.md
-
-      # These files are not actually present in the package, but the file names
-      # are added to the package header. From the RPM directives documentation:
-      #
-      # "There are times when a file should be owned by the package but not
-      # installed - log files and state files are good examples of cases you
-      # might desire this to happen."
-      #
-      # "The way to achieve this, is to use the %ghost directive. By adding this
-      # directive to the line containing a file, RPM will know about the ghosted
-      # file, but will not add it to the package."
-      #
-      # For non rpm packages ghost files are ignored at this time.
-      - dst: /etc/casper.conf
-        type: ghost
-      - dst: /var/log/boo.log
-        type: ghost
-
-      # You can use the packager field to add files that are unique to a
-      # specific packager
-      - src: path/to/rpm/file.conf
-        dst: /etc/file.conf
-        type: "config|noreplace"
-        packager: rpm
-      - src: path/to/deb/file.conf
-        dst: /etc/file.conf
-        type: "config|noreplace"
-        packager: deb
-      - src: path/to/apk/file.conf
-        dst: /etc/file.conf
-        type: "config|noreplace"
-        packager: apk
-
-      # Sometimes it is important to be able to set the mtime, mode, owner, or
-      # group for a file that differs from what is on the local build system at
-      # build time.
-      - src: path/to/foo
-        dst: /usr/local/foo
-        file_info:
-          mode: 0644
-          mtime: 2008-01-02T15:04:05Z
-          owner: notRoot
-          group: notRoot
-
-      # If `dst` ends with a `/`, it'll create the given path and copy the given
-      # `src` into it, the same way `cp` works with and without trailing `/`.
-      - src: ./foo/bar/*
-        dst: /usr/local/myapp/
-
-      # Using the type 'dir', empty directories can be created. When building
-      # RPMs, however, this type has another important purpose: Claiming
-      # ownership of that folder. This is important because when upgrading or
-      # removing an RPM package, only the directories for which it has claimed
-      # ownership are removed. However, you should not claim ownership of a
-      # folder that is created by the OS or a dependency of your package.
-      #
-      # A directory in the build environment can optionally be provided in the
-      # 'src' field in order copy mtime and mode from that directory without
-      # having to specify it manually.
-      - dst: /some/dir
-        type: dir
-        file_info:
-          mode: 0700
     # Custom configuration applied only to the RPM packager.
     rpm:
       # The package summary.
@@ -250,7 +186,6 @@ nfpms:
       # the software, as opposed to the author of the software.
       # `maintainer` will be used as fallback if not specified.
       # This will expand any env var you set in the field, eg packager: ${PACKAGER}
-      packager: DevCycle <support@devcycle.com>
 
       # Compression algorithm (gzip (default), lzma or xz).
       compression: lzma

@@ -5,10 +5,8 @@ github.com/creack/pty v1.1.9/go.mod h1:oKZEueFk5CKHvIhNR5MUki03XCEU+Q6VDXinZuGJ3
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
-github.com/devcyclehq/go-server-sdk/v2 v2.9.7-0.20230503141249-05a8cad604f1 h1:F6ZQM0z5Isz9mGmJhv/utA74/QItkF7klMEJHQW5LxM=
-github.com/devcyclehq/go-server-sdk/v2 v2.9.7-0.20230503141249-05a8cad604f1/go.mod h1:bIUmiZMp/crMNPX6Iz+vCMABoGAGW641jXIm87/uJRc=
-github.com/devcyclehq/go-server-sdk/v2 v2.10.2-0.20230523174649-ac81890e76db h1:6AjpfAXZD4Zt5nP3sduzDlkyTtmNUjn5Sk4IzIGWm0w=
-github.com/devcyclehq/go-server-sdk/v2 v2.10.2-0.20230523174649-ac81890e76db/go.mod h1:84aAm2GSCnZAXEL2QsArwUapAtQn1g+R4hkFw4pg44k=
+github.com/devcyclehq/go-server-sdk/v2 v2.10.2 h1:3C63HCoE7h/0lR33FhHI/sZB4UKNKuk7TBeif+Ju7Tg=
+github.com/devcyclehq/go-server-sdk/v2 v2.10.2/go.mod h1:84aAm2GSCnZAXEL2QsArwUapAtQn1g+R4hkFw4pg44k=
 github.com/fortytw2/leaktest v1.3.0 h1:u8491cBMTQ8ft8aeV+adlcytMZylmA5nnwwkRZjI8vw=
 github.com/fortytw2/leaktest v1.3.0/go.mod h1:jDsjWgpAGjm2CA7WthBh/CdZYEPF31XHquHwclZch5g=
 github.com/gin-contrib/sse v0.1.0 h1:Y/yl/+YNO8GZSjAhjMsSuLt29uWRFHdHYUb5lYOV9qE=
@@ -59,8 +57,6 @@ github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZN
 github.com/rogpeppe/go-internal v1.9.0 h1:73kH8U+JUqXU8lRuOHeVHaa/SZPifC7BkcraZVejAe8=
 github.com/rogpeppe/go-internal v1.9.0/go.mod h1:WtVeX8xhTBvf0smdhujwtBcq4Qrzq/fJaraNFVN+nFs=
 github.com/rwtodd/Go.Sed v0.0.0-20210816025313-55464686f9ef/go.mod h1:8AEUvGVi2uQ5b24BIhcr0GCcpd/RNAFWaN2CJFrWIIQ=
-github.com/spaolacci/murmur3 v1.1.0 h1:7c1g84S4BPRrfL5Xrdp6fOJ206sU9y293DDHaoy0bLI=
-github.com/spaolacci/murmur3 v1.1.0/go.mod h1:JwIasOWyU6f++ZhiEuf87xNszmSA2myDM2Kzu9HwQUA=
 github.com/stretchr/objx v0.1.0/go.mod h1:HFkY916IF+rwdDfMAkV7OtwuqBVzrE8GR6GFx+wExME=
 github.com/stretchr/objx v0.4.0/go.mod h1:YvHI0jy2hoMjB+UWwv71VJQ9isScKT/TqJzVSSt89Yw=
 github.com/stretchr/objx v0.5.0/go.mod h1:Yh+to48EsGEfYuaHDzXPcE3xhTkx73EhmCGUpEOglKo=

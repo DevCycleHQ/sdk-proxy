@@ -1,0 +1,28 @@
+{
+  "instances": [
+    {
+      "unixSocketPath": "/tmp/devcycle.sock",
+      "httpPort": 8080,
+      "unixSocketEnabled": false,
+      "httpEnabled": true,
+      "sdkKey": "",
+      "platformData": {
+        "sdkType": "server",
+        "sdkVersion": "2.10.2",
+        "platformVersion": "go1.20.3",
+        "deviceModel": "",
+        "platform": "Go",
+        "hostname": "localhost"
+      },
+      "sdkConfig": {
+        "eventFlushIntervalMS": 3000,
+        "configPollingIntervalMS": 30000,
+        "requestTimeout": 3000,
+        "maxEventsPerFlush": 10000,
+        "minEventsPerFlush": 100,
+        "configCDNURI": "https://config-cdn.devcycle.com",
+        "eventsAPIURI": "https://events.devcycle.com"
+      }
+    }
+  ]
+}

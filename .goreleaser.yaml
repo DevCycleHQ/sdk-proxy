@@ -159,7 +159,7 @@ nfpms:
     # GoReleaser will automatically add the binaries.
     contents:
       # Simple config file
-      - src: config.json
+      - src: config.json.example
         dst: /etc/devcycle-lb-proxy/config.json
         type: config
 

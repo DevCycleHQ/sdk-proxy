@@ -48,6 +48,10 @@ nfpms:
       DevCycle Local Bucketing Proxy. Used to emulate the DevCycle bucketing api locally to enable 
       more support for Local Bucketing in languages that do not support WebAssembly.
     license: MIT
+    contents:
+      - src: config.json.example
+        dst: /etc/devcycle-lb-proxy/config.json.example
+        type: config
     formats:
       - apk
       - deb

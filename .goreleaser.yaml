@@ -1,10 +1,6 @@
-# This is an example .goreleaser.yml file with some sensible defaults.
-# Make sure to check the documentation at https://goreleaser.com
 before:
   hooks:
-    # You may remove this if you don't use go modules.
     - go mod tidy
-    # you may remove this if you don't need go generate
     - go generate ./...
 builds:
    -
@@ -19,7 +15,6 @@ builds:
 
 archives:
   - format: tar.gz
-    # this name template makes the OS and Arch compatible with the results of uname.
     name_template: >-
       {{ .ProjectName }}_
       {{- title .Os }}_
@@ -43,204 +38,22 @@ changelog:
       - '^test:'
 
 nfpms:
-  # note that this is an array of nfpm configs
-  -
-    # ID of the nfpm config, must be unique.
-    #
-    # Default: 'default'
-    id: lb-proxy
-
-    # Name of the package.
-    # Default: ProjectName
-    # Templates: allowed (since v1.18)
+  - id: lb-proxy
     package_name: devcycle-local-bucketing-proxy
-
-    # You can change the file name of the package.
-    #
-    # Default: '{{ .PackageName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}{{ with .Arm }}v{{ . }}{{ end }}{{ with .Mips }}_{{ . }}{{ end }}{{ if not (eq .Amd64 "v1") }}{{ .Amd64 }}{{ end }}'
-    # Templates: allowed
     file_name_template: "{{ .ConventionalFileName }}"
-
-    # Build IDs for the builds you want to create NFPM packages for.
-    # Defaults empty, which means no filtering.
-    builds:
-      - lb-proxy
-
-    # Your app's vendor.
     vendor: DevCycle
-
-    # Your app's homepage.
     homepage: https://devcycle.com/
-
-    # Your app's maintainer (probably you).
     maintainer: DevCycle <support@devcycle.com>
-
-    # Your app's description.
     description: |-
       DevCycle Local Bucketing Proxy. Used to emulate the DevCycle bucketing api locally to enable 
       more support for Local Bucketing in languages that do not support WebAssembly.
-
-    # Your app's license.
     license: MIT
-
-    # Formats to be generated.
     formats:
       - apk
       - deb
       - rpm
-
-    # Packages your package depends on. (overridable)
-    dependencies: []
-    # Packages it provides. (overridable)
-    #
-    # Since: v1.11
     provides:
       - devcycle-local-bucketing-proxy
-
-    # Packages your package recommends installing. (overridable)
-    recommends: []
-    # Packages your package suggests installing. (overridable)
     suggests:
       - nginx
-
-    # Packages that conflict with your package. (overridable)
-    conflicts: []
-
-    # Packages it replaces. (overridable)
-    replaces: []
-
-    # Path that the binaries should be installed.
-    # Default: '/usr/bin'
-    bindir: /usr/bin
-
-    # Version Epoch.
-    # Default: extracted from `version` if it is semver compatible
-    epoch: 2
-
-    # Version Prerelease.
-    # Default: extracted from `version` if it is semver compatible
-    prerelease: beta1
-
-    # Version Metadata (previously deb.metadata).
-    # Setting metadata might interfere with version comparisons depending on the
-    # packager.
-    #
-    # Default: extracted from `version` if it is semver compatible
     version_metadata: git
-
-    # Version Release.
-    release: 1
-
-    # Section.
-    section: default
-
-    # Priority.
-    priority: extra
-
-    # Makes a meta package - an empty package that contains only supporting
-    # files and dependencies.
-    # When set to `true`, the `builds` option is ignored.
-    #
-    # Default: false
-    meta: true
-
-    # Changelog YAML file, see: https://github.com/goreleaser/chglog
-    #
-    # You can use goreleaser/chglog to create the changelog for your project,
-    # pass that changelog yaml file to GoReleaser,
-    # and it should in turn setup it accordingly for the given available
-    # formats (deb and rpm at the moment).
-    #
-    # Experimental.
-    # Since: v1.11
-    #changelog: ./foo.yml
-
-    # Additional templated contents to add to the archive.
-    # Those files will have their contents pass through the template engine,
-    # and its results will be added to the package.
-    #
-    # Since: v1.17 (pro)
-    # This feature is only available in GoReleaser Pro.
-    # Templates: allowed
-    # Custom configuration applied only to the RPM packager.
-    rpm:
-      # The package summary.
-      #
-      # Default: first line of the description
-      summary: DevCycle Local Bucketing Proxy
-
-      # The package group.
-      # This option is deprecated by most distros but required by old distros
-      # like CentOS 5 / EL 5 and earlier.
-      group: Unspecified
-
-      # The packager is used to identify the organization that actually packaged
-      # the software, as opposed to the author of the software.
-      # `maintainer` will be used as fallback if not specified.
-      # This will expand any env var you set in the field, eg packager: ${PACKAGER}
-
-      # Compression algorithm (gzip (default), lzma or xz).
-      compression: lzma
-
-      # The package is signed if a key_file is set
-      signature:
-        # PGP secret key file path (can also be ASCII-armored).
-        # The passphrase is taken from the environment variable
-        # `$NFPM_ID_RPM_PASSPHRASE` with a fallback to `$NFPM_ID_PASSPHRASE`,
-        # where ID is the id of the current nfpm config.
-        # The id will be transformed to uppercase.
-        # E.g. If your nfpm id is 'default' then the rpm-specific passphrase
-        # should be set as `$NFPM_DEFAULT_RPM_PASSPHRASE`
-        #
-        # Templates: allowed
-        key_file: ''
-
-    # Custom configuration applied only to the Deb packager.
-    deb:
-
-      # The package is signed if a key_file is set
-      signature:
-        # PGP secret key file path (can also be ASCII-armored).
-        # The passphrase is taken from the environment variable
-        # `$NFPM_ID_DEB_PASSPHRASE` with a fallback to `$NFPM_ID_PASSPHRASE`,
-        # where ID is the id of the current nfpm config.
-        # The id will be transformed to uppercase.
-        # E.g. If your nfpm id is 'default' then the deb-specific passphrase
-        # should be set as `$NFPM_DEFAULT_DEB_PASSPHRASE`
-        #
-        # Templates: allowed
-        key_file: ''
-
-        # The type describes the signers role, possible values are "origin",
-        # "maint" and "archive".
-        #
-        # Default: 'origin'
-        type: origin
-
-    apk:
-
-      # The package is signed if a key_file is set
-      signature:
-        # PGP secret key file path (can also be ASCII-armored).
-        # The passphrase is taken from the environment variable
-        # `$NFPM_ID_APK_PASSPHRASE` with a fallback to `$NFPM_ID_PASSPHRASE`,
-        # where ID is the id of the current nfpm config.
-        # The id will be transformed to uppercase.
-        # E.g. If your nfpm id is 'default' then the apk-specific passphrase
-        # should be set as `$NFPM_DEFAULT_APK_PASSPHRASE`
-        #
-        # Templates: allowed
-        key_file: ''
-
-        # The name of the signing key. When verifying a package, the signature
-        # is matched to the public key store in /etc/apk/keys/<key_name>.rsa.pub.
-        #
-        # Default: maintainer's email address
-        # Templates: allowed (since v1.15)
-        key_name: origin
-
-
-# The lines beneath this are called `modelines`. See `:help modeline`
-# Feel free to remove those if you don't want/use them.
-# yaml-language-server: $schema=https://goreleaser.com/static/schema.json
-# vim: set ts=2 sw=2 tw=0 fo=cnqoj

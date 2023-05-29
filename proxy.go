@@ -2,13 +2,15 @@ package local_bucketing_proxy
 
 import (
 	"fmt"
-	devcycle "github.com/devcyclehq/go-server-sdk/v2"
-	"github.com/gin-gonic/gin"
+	"log"
 	"os"
 	"strconv"
+
+	devcycle "github.com/devcyclehq/go-server-sdk/v2"
+	"github.com/gin-gonic/gin"
 )
 
-func NewBucketingProxyInstance(instance ProxyInstance) (*ProxyInstance, error) {
+func NewBucketingProxyInstance(instance *ProxyInstance) (*ProxyInstance, error) {
 	options := instance.BuildDevCycleOptions()
 	client, err := devcycle.NewClient(instance.SDKKey, options)
 	instance.dvcClient = client
@@ -29,14 +31,14 @@ func NewBucketingProxyInstance(instance ProxyInstance) (*ProxyInstance, error) {
 			return nil, fmt.Errorf("HTTP port must be set")
 		}
 		go r.Run(":" + strconv.Itoa(instance.HTTPPort))
-		fmt.Println("HTTP server started on port " + strconv.Itoa(instance.HTTPPort))
+		log.Printf("HTTP server started on port %d", instance.HTTPPort)
 	}
 	if instance.UnixSocketEnabled {
 		if _, err := os.Stat(instance.UnixSocketPath); err == nil {
 			return nil, fmt.Errorf("unix socket path %s already exists. Skipping instance creation", instance.UnixSocketPath)
 		}
 		go r.RunUnix(instance.UnixSocketPath)
-		fmt.Println("Running on unix socket: " + instance.UnixSocketPath)
+		log.Printf("Running on unix socket: %s", instance.UnixSocketPath)
 	}
-	return &instance, err
+	return instance, err
 }

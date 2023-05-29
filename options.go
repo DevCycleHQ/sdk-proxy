@@ -1,12 +1,13 @@
 package local_bucketing_proxy
 
 import (
-	devcycle "github.com/devcyclehq/go-server-sdk/v2"
 	"time"
+
+	devcycle "github.com/devcyclehq/go-server-sdk/v2"
 )
 
 type ProxyConfig struct {
-	Instances []ProxyInstance `json:"instances"`
+	Instances []*ProxyInstance `json:"instances"`
 }
 
 type SDKConfig struct {
@@ -18,7 +19,7 @@ type SDKConfig struct {
 	MaxEventQueueSize            int           `json:"maxEventsPerFlush,omitempty" split_words:"true" desc:"The maximum number of events to be in the queue before dropping events."`
 	FlushEventQueueSize          int           `json:"minEventsPerFlush,omitempty" split_words:"true" desc:"The minimum number of events to be in the queue before flushing events."`
 	ConfigCDNURI                 string        `json:"configCDNURI,omitempty" envconfig:"CONFIG_CDN_URI" desc:"The URI of the Config CDN - leave unspecified if not needing an outbound proxy."`
-	EventsAPIURI                 string        `json:"eventsAPIURI,omitempty" envconvig:"EVENTS_API_URI" desc:"The URI of the Events API - leave unspecified if not needing an outbound proxy."`
+	EventsAPIURI                 string        `json:"eventsAPIURI,omitempty" envconfig:"EVENTS_API_URI" desc:"The URI of the Events API - leave unspecified if not needing an outbound proxy."`
 }
 
 type ProxyInstance struct {

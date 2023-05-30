@@ -2,25 +2,19 @@ package main
 
 import (
 	"context"
-	"encoding/json"
 	"flag"
 	"fmt"
 	"log"
 	"os"
 	"os/signal"
-	"runtime"
 	"syscall"
 
-	devcycle "github.com/devcyclehq/go-server-sdk/v2"
 	lbproxy "github.com/devcyclehq/local-bucketing-proxy"
-	"github.com/gin-gonic/gin"
 	"github.com/kelseyhightower/envconfig"
 )
 
 const (
-	EnvVarPrefix = "DVC_LB_PROXY"
-	Version      = "0.1.0"
-
+	Version         = "0.1.0"
 	EnvConfigFormat = `
 This application can also be configured via the environment. The following environment
 variables can be used:
@@ -30,77 +24,20 @@ variables can be used:
 {{end}}`
 )
 
-// For parsing just the config filename, before we know the intended config mechanism
-type InitialConfig struct {
-	ConfigPath string `envconfig:"CONFIG" desc:"The path to a JSON config file."`
-	Debug      bool   `envconfig:"DEBUG" default:"false" desc:"Whether to enable debug mode."`
-}
-
-// For parsing the full config along with the proxy settings
-type FullEnvConfig struct {
-	InitialConfig
-	lbproxy.ProxyInstance
-}
-
-// TODO: this is complicated enough that we need tests for it
-func parseConfig() (*lbproxy.ProxyConfig, error) {
-	var initialConfig InitialConfig
-	var proxyConfig lbproxy.ProxyConfig
-
-	flag.StringVar(&initialConfig.ConfigPath, "config", "", "The path to a JSON config file.")
+func main() {
+	var configPath string
+	flag.StringVar(&configPath, "config", "", "The path to a JSON config file.")
 
 	flag.Usage = func() {
 		log.Printf("DevCycle Local Bucketing Proxy Version %s\n", Version)
 
 		log.Printf("Usage: %s [options]\n", os.Args[0])
 		flag.PrintDefaults()
-		_ = envconfig.Usagef(EnvVarPrefix, &FullEnvConfig{}, os.Stderr, EnvConfigFormat)
+		_ = envconfig.Usagef(lbproxy.EnvVarPrefix, &lbproxy.FullEnvConfig{}, os.Stderr, EnvConfigFormat)
 	}
 	flag.Parse()
 
-	// Load config from environment variables
-	if initialConfig.ConfigPath == "" {
-		var fullEnvConfig FullEnvConfig
-		log.Println("No config path provided, reading configuration from environment variables.")
-		err := envconfig.Process(EnvVarPrefix, &fullEnvConfig)
-
-		if err != nil {
-			return nil, err
-		}
-		proxyConfig.Instances = append(proxyConfig.Instances, &fullEnvConfig.ProxyInstance)
-	} else {
-		// Load config from JSON file
-		configData, err := os.ReadFile(initialConfig.ConfigPath)
-		if err != nil {
-			log.Printf("Failed to read config file, writing a default configuration file to the specified path: %s", initialConfig.ConfigPath)
-			proxyConfig = sampleProxyConfig()
-
-			sampleConfigData, err := json.MarshalIndent(proxyConfig, "", "  ")
-			if err != nil {
-				return nil, fmt.Errorf("failed to marshal sample config to JSON: %w", err)
-			}
-			err = os.WriteFile(initialConfig.ConfigPath, sampleConfigData, 0644)
-			if err != nil {
-				return nil, fmt.Errorf("Failed to write sample config to file: %w", err)
-			}
-			log.Fatal("Add your SDK key to the config file and run this command again.")
-		}
-
-		err = json.Unmarshal(configData, &proxyConfig)
-		if err != nil {
-			return nil, err
-		}
-	}
-
-	if !initialConfig.Debug {
-		gin.SetMode(gin.ReleaseMode)
-	}
-
-	return &proxyConfig, nil
-}
-
-func main() {
-	config, err := parseConfig()
+	config, err := lbproxy.ParseConfig(configPath)
 	if err != nil {
 		log.Printf("Failed to parse config: %s", err)
 		log.Fatal("Please either set the config path or set the environment variables")
@@ -146,41 +83,4 @@ func main() {
 	}()
 
 	<-ctx.Done()
-}
-
-func sampleProxyConfig() lbproxy.ProxyConfig {
-	hostname, err := os.Hostname()
-	if err != nil {
-		hostname = "unknown"
-	}
-
-	proxyConfig := lbproxy.ProxyConfig{
-		Instances: []*lbproxy.ProxyInstance{{
-			UnixSocketPath:    "/tmp/devcycle.sock",
-			HTTPPort:          8080,
-			UnixSocketEnabled: false,
-			HTTPEnabled:       true,
-			SDKKey:            "",
-			PlatformData: devcycle.PlatformData{
-				SdkType:         "server",
-				SdkVersion:      devcycle.VERSION,
-				PlatformVersion: runtime.Version(),
-				Platform:        "Go",
-				Hostname:        hostname,
-			},
-			SDKConfig: lbproxy.SDKConfig{
-				EventFlushIntervalMS:         0,
-				ConfigPollingIntervalMS:      0,
-				RequestTimeout:               0,
-				DisableAutomaticEventLogging: false,
-				DisableCustomEventLogging:    false,
-				MaxEventQueueSize:            0,
-				FlushEventQueueSize:          0,
-				ConfigCDNURI:                 "",
-				EventsAPIURI:                 "",
-			},
-		}},
-	}
-	proxyConfig.Default()
-	return proxyConfig
 }

@@ -5,7 +5,7 @@
       "httpPort": 8080,
       "unixSocketEnabled": false,
       "httpEnabled": true,
-      "sdkKey": "",
+      "sdkKey": "dvc_YOUR_KEY_HERE",
       "platformData": {
         "sdkType": "server",
         "sdkVersion": "2.10.2",
@@ -17,7 +17,7 @@
       "sdkConfig": {
         "eventFlushIntervalMS": 3000,
         "configPollingIntervalMS": 30000,
-        "requestTimeout": 3000,
+        "requestTimeout": 60000,
         "maxEventsPerFlush": 10000,
         "minEventsPerFlush": 100,
         "configCDNURI": "https://config-cdn.devcycle.com",

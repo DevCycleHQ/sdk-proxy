@@ -3,11 +3,12 @@ package local_bucketing_proxy
 import (
 	"encoding/json"
 	"fmt"
-	devcycle "github.com/devcyclehq/go-server-sdk/v2"
-	"github.com/gin-gonic/gin"
 	"io"
 	"net/http"
 	"strings"
+
+	devcycle "github.com/devcyclehq/go-server-sdk/v2"
+	"github.com/gin-gonic/gin"
 )
 
 func Variable(client *devcycle.Client) gin.HandlerFunc {
@@ -57,7 +58,6 @@ func Feature(client *devcycle.Client) gin.HandlerFunc {
 			return
 		}
 		c.JSON(http.StatusOK, allFeatures)
-		return
 	}
 }
 

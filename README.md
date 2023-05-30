@@ -2,7 +2,7 @@
 
 This is an implementation that uses our Go Server SDK to initialize and start multiple servers that emulate the response
 format of the
-bucketing-api server. This allows SDK's where implementing the WebAssembly bucketing library as a core isn't possible to
+Bucketing API server. This allows SDK's where implementing the WebAssembly bucketing library as a core isn't possible to
 benefit from the Local Bucketing benefits of the DevCycle platform.
 
 ## Usage
@@ -11,12 +11,9 @@ The application is delivered in multiple formats - a Docker image, a deb, and RP
 format for local building and implementation.
 
 The proxy handles two modes of operation - you can expose the HTTP server over a TCP port, or over Unix domain sockets.
-The latter is recommended for servers that will deploy this in a fashion where the proxy is running on the same machine
-as the SDK,
-preventing the need for network calls.
+The latter is recommended for servers that will deploy this with the proxy running on the same machine as the SDK, preventing the need for network calls.
 
-The HTTP server mode is a 1:1 replacement for the bucketing-api - and can be used in place where there is no SDK in use
-as well.
+The HTTP server mode is a 1:1 replacement for the Bucketing API used by all SDKs in cloud bucketing mode, or can be used directly without an SDK as an API.
 
 ### Docker
 
@@ -31,6 +28,8 @@ We also provide the raw application binary to wrap in your own daemon manager, o
 Either a path to a config file which allows specifying multiple instances of a proxy, or environment variables can be
 used to configure the proxy.
 
+A simple healthcheck for each proxy instance can be performed by sending a GET request to the `/healthz` endpoint.
+
 ### Command Line Arguments
 
 | ARGUMENT | TYPE   | DEFAULT | REQUIRED | DESCRIPTION                                |
@@ -42,6 +41,7 @@ used to configure the proxy.
 
 | KEY                                                    | TYPE          | DEFAULT | REQUIRED | DESCRIPTION                                                                     |
 |--------------------------------------------------------|---------------|---------|----------|---------------------------------------------------------------------------------|
+| DVC_LB_PROXY_CONFIG                                     | String        |         |          | The path to a JSON configuration file. |
 | DVC_LB_PROXY_UNIX_SOCKET_PATH                          | String        |         |          | The path to the Unix socket.                                                    |
 | DVC_LB_PROXY_HTTP_PORT                                 | Integer       | 8080    |          | The port to listen on for HTTP requests. Defaults to 8080.                      |
 | DVC_LB_PROXY_UNIX_SOCKET_ENABLED                       | True or False | false   |          | Whether to enable the Unix socket. Defaults to false.                           |

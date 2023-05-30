@@ -11,6 +11,10 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+func Health(c *gin.Context) {
+	c.Status(200)
+}
+
 func Variable(client *devcycle.Client) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		user := getUserFromBody(c)

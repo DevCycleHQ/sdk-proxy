@@ -18,6 +18,8 @@ func NewBucketingProxyInstance(instance *ProxyInstance) (*ProxyInstance, error) 
 	r.Use(gin.Logger())
 	r.Use(gin.Recovery())
 
+	r.GET("/healthz", Health)
+
 	bucketingApiV1 := r.Group("/v1/")
 	bucketingApiV1.Use(DevCycleAuthRequired())
 	{

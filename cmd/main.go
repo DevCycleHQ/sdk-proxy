@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"flag"
 	"fmt"
@@ -123,15 +124,28 @@ func main() {
 		}(instance.UnixSocketPath)
 	}
 
-	// TODO: actually handle signals by shutting down gracefully and flushing events
+	ctx, cancel := context.WithCancel(context.Background())
 
 	// Use a buffered channel, so we don't miss any signals
 	c := make(chan os.Signal, 1)
-	signal.Notify(c, os.Interrupt, os.Kill, syscall.SIGTERM)
+	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
 
-	// Block until a signal is received.
-	s := <-c
-	fmt.Println("Got signal:", s)
+	go func() {
+		// Block until a signal is received.
+		s := <-c
+		fmt.Printf("Received signal: %s, shutting down", s)
+
+		for _, instance := range config.Instances {
+			err := instance.Close()
+			if err != nil {
+				log.Printf("Failed to shut down instance: %s", err)
+			}
+		}
+
+		cancel()
+	}()
+
+	<-ctx.Done()
 }
 
 func sampleProxyConfig() lbproxy.ProxyConfig {

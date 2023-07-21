@@ -39,7 +39,3 @@ _testmain.go
 vendor/
 .bin/
 
-# Assorted tool configuration
-.envrc
-modd.conf
-

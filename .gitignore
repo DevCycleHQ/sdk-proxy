@@ -1,5 +1,8 @@
 /dist
 
+# JSON config files
+/*.json
+
 # Compiled Object files, Static and Dynamic libs (Shared Objects)
 *.o
 *.a
@@ -35,3 +38,8 @@ _testmain.go
 
 vendor/
 .bin/
+
+# Assorted tool configuration
+.envrc
+modd.conf
+

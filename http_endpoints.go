@@ -74,7 +74,43 @@ func Track(client *devcycle.Client) gin.HandlerFunc {
 				c.JSON(http.StatusInternalServerError, gin.H{})
 			}
 		}
+	}
+}
 
+func BatchEvents(client *devcycle.Client) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		// Passthrough proxy to the configured events api endpoint.
+		httpC := http.DefaultClient
+		req, err := http.NewRequest("POST", client.DevCycleOptions.EventsAPIURI, c.Request.Body)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"message": "Error creating request"})
+			return
+		}
+		req.Header.Set("Content-Type", "application/json")
+		resp, err := httpC.Do(req)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"message": "Error sending request"})
+			return
+		}
+		respBody, err := io.ReadAll(resp.Body)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"message": "Error reading response"})
+			return
+		}
+		defer resp.Body.Close()
+		c.Data(resp.StatusCode, resp.Header.Get("Content-Type"), respBody)
+	}
+}
+
+func GetConfig(client *devcycle.Client) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		rawConfig, etag, err := client.GetRawConfig()
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{})
+			return
+		}
+		c.Header("ETag", etag)
+		c.Data(http.StatusOK, "application/json", rawConfig)
 	}
 }
 

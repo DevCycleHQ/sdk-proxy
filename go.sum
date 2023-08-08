@@ -7,6 +7,8 @@ github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/devcyclehq/go-server-sdk/v2 v2.10.2 h1:3C63HCoE7h/0lR33FhHI/sZB4UKNKuk7TBeif+Ju7Tg=
 github.com/devcyclehq/go-server-sdk/v2 v2.10.2/go.mod h1:84aAm2GSCnZAXEL2QsArwUapAtQn1g+R4hkFw4pg44k=
+github.com/devcyclehq/go-server-sdk/v2 v2.10.5-0.20230808160607-e45c8f796911 h1:ddaua8LKlPlSk2x3NSgl7Bxzc0LDElMQPtZqTzlVVE4=
+github.com/devcyclehq/go-server-sdk/v2 v2.10.5-0.20230808160607-e45c8f796911/go.mod h1:84aAm2GSCnZAXEL2QsArwUapAtQn1g+R4hkFw4pg44k=
 github.com/fortytw2/leaktest v1.3.0 h1:u8491cBMTQ8ft8aeV+adlcytMZylmA5nnwwkRZjI8vw=
 github.com/fortytw2/leaktest v1.3.0/go.mod h1:jDsjWgpAGjm2CA7WthBh/CdZYEPF31XHquHwclZch5g=
 github.com/gin-contrib/sse v0.1.0 h1:Y/yl/+YNO8GZSjAhjMsSuLt29uWRFHdHYUb5lYOV9qE=

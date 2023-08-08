@@ -19,15 +19,23 @@ func NewBucketingProxyInstance(instance *ProxyInstance) (*ProxyInstance, error) 
 	r.Use(gin.Recovery())
 
 	r.GET("/healthz", Health)
-
-	bucketingApiV1 := r.Group("/v1/")
-	bucketingApiV1.Use(DevCycleAuthRequired())
+	v1 := r.Group("/v1")
+	v1.Use(DevCycleAuthRequired())
 	{
-		bucketingApiV1.POST("/variables/:key", Variable(client))
-		bucketingApiV1.POST("/variables", Variable(client))
-		bucketingApiV1.POST("/features", Feature(client))
-		bucketingApiV1.POST("/track", Track(client))
+		// Bucketing API
+		v1.POST("/variables/:key", Variable(client))
+		v1.POST("/variables", Variable(client))
+		v1.POST("/features", Feature(client))
+		v1.POST("/track", Track(client))
+		// Events API
+		v1.POST("/events", Track(client))
+		v1.POST("/events/batch", BatchEvents(client))
 	}
+	configCDNv1 := r.Group("/config/v1")
+	{
+		configCDNv1.GET("/server/:sdkKey", GetConfig(client))
+	}
+
 	if instance.HTTPEnabled {
 		if instance.HTTPPort == 0 {
 			return nil, fmt.Errorf("HTTP port must be set")

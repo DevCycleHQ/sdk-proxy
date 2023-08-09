@@ -25,8 +25,6 @@ on:
 
 permissions:
   contents: write
-  # packages: write
-  # issues: write
 
 env:
   REGISTRY: ghcr.io
@@ -70,14 +68,6 @@ jobs:
         with:
           go-version: stable
 
-      - uses: goreleaser/goreleaser-action@v4
-        with:
-          distribution: goreleaser
-          version: v1.19.2
-          args: release --clean --skip-publish
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
       - name: Build and push Docker image
         uses: docker/build-push-action@v4.0.0
         with:
@@ -97,10 +87,6 @@ jobs:
           prerelease: ${{ github.event.inputs.prerelease }}
           draft: ${{ github.event.inputs.draft }}
           changelog: ${{ steps.prepare-release.outputs.changelog }}
-          files: |-
-            dist/devcycle*
-            dist/checksums.txt
-            dist/CHANGELOG.md
 
       - name: Display link to release
         run: |

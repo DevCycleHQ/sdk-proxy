@@ -1,9 +1,11 @@
 name: GoReleaser Artifacts
 
 on:
-  release:
+  workflow_run:
+    workflows:
+      - Release
     types:
-      - published
+      - completed
 
 permissions:
   contents: write

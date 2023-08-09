@@ -1,10 +1,9 @@
 name: GoReleaser Artifacts
 
 on:
-  push:
-    # run only against tags
-    tags:
-      - '*'
+  release:
+    types:
+      - published
 
 permissions:
   contents: write
@@ -18,7 +17,10 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      - run: git fetch --force --tags
+      - run: |
+          git fetch --force --tags
+          latestTag=$(git describe --tags `git rev-list --tags --max-count=1`)
+          git checkout $latestTag
       - uses: actions/setup-go@v4
         with:
           go-version: stable

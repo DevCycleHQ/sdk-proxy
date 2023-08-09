@@ -104,6 +104,11 @@ func BatchEvents(client *devcycle.Client) gin.HandlerFunc {
 
 func GetConfig(client *devcycle.Client) gin.HandlerFunc {
 	return func(c *gin.Context) {
+		if c.Param("sdkKey") == "" || !strings.HasSuffix(c.Param("sdkKey"), ".json") {
+			c.AbortWithStatus(http.StatusForbidden)
+			return
+		}
+
 		rawConfig, etag, err := client.GetRawConfig()
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{})

@@ -47,8 +47,8 @@ jobs:
         uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
         with:
           registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          username: taplytics-robot
+          password: ${{ secrets.AUTOMATION_USER_TOKEN }}
 
       - name: Extract metadata (tags, labels) for Docker
         id: meta
@@ -81,7 +81,7 @@ jobs:
       - uses: DevCycleHQ/release-action/create-release@v2
         id: create-release
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.AUTOMATION_USER_TOKEN }}
           tag: ${{ steps.prepare-release.outputs.next-release-tag }}
           target: main
           prerelease: ${{ github.event.inputs.prerelease }}

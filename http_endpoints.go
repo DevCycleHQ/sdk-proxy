@@ -81,7 +81,7 @@ func BatchEvents(client *devcycle.Client) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// Passthrough proxy to the configured events api endpoint.
 		httpC := http.DefaultClient
-		req, err := http.NewRequest("POST", "https://events.devcycle.com/v1/events/batch", c.Request.Body)
+		req, err := http.NewRequest("POST", client.DevCycleOptions.EventsAPIURI+"/v1/events/batch", c.Request.Body)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"message": "Error creating request, " + err.Error()})
 			return

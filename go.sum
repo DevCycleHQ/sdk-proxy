@@ -11,6 +11,8 @@ github.com/devcyclehq/go-server-sdk/v2 v2.10.5-0.20230808160607-e45c8f796911 h1:
 github.com/devcyclehq/go-server-sdk/v2 v2.10.5-0.20230808160607-e45c8f796911/go.mod h1:84aAm2GSCnZAXEL2QsArwUapAtQn1g+R4hkFw4pg44k=
 github.com/devcyclehq/go-server-sdk/v2 v2.10.9 h1:NjQjofW2e6hKqMU0Sl4jdNwSrF23KpEIpDZyGK7ge9U=
 github.com/devcyclehq/go-server-sdk/v2 v2.10.9/go.mod h1:84aAm2GSCnZAXEL2QsArwUapAtQn1g+R4hkFw4pg44k=
+github.com/devcyclehq/go-server-sdk/v2 v2.10.10-0.20230814185419-d5c8343cff69 h1:YVvcDkaLjkRPm/bQquT0YEykZ6incop9jhZZGWFV+9E=
+github.com/devcyclehq/go-server-sdk/v2 v2.10.10-0.20230814185419-d5c8343cff69/go.mod h1:84aAm2GSCnZAXEL2QsArwUapAtQn1g+R4hkFw4pg44k=
 github.com/fortytw2/leaktest v1.3.0 h1:u8491cBMTQ8ft8aeV+adlcytMZylmA5nnwwkRZjI8vw=
 github.com/fortytw2/leaktest v1.3.0/go.mod h1:jDsjWgpAGjm2CA7WthBh/CdZYEPF31XHquHwclZch5g=
 github.com/gin-contrib/sse v0.1.0 h1:Y/yl/+YNO8GZSjAhjMsSuLt29uWRFHdHYUb5lYOV9qE=

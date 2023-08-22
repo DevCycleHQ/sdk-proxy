@@ -3,8 +3,8 @@ before:
     - go mod tidy
     - go generate ./...
 builds:
-  - id: devcycle_local_bucketing_proxy     # controls the local directory names only
-    binary: devcycle-local-bucketing-proxy # controls the actual executable name
+  - id: devcycle_sdk_proxy     # controls the local directory names only
+    binary: devcycle-sdk-proxy # controls the actual executable name
     main: ./cmd
     env:
       - CGO_ENABLED=0
@@ -17,7 +17,7 @@ archives:
   - format: tar.gz
     # The following template controls the format of the .tar.gz filenames
     name_template: >-
-      devcycle_local_bucketing_proxy_
+      devcycle_sdk_proxy_
       {{- .Os }}_
       {{- if eq .Arch "amd64" }}x86_64
       {{- else if eq .Arch "386" }}i386
@@ -39,26 +39,26 @@ changelog:
       - '^test:'
 
 nfpms:
-  - id: devcycle-local-bucketing-proxy
-    package_name: devcycle-local-bucketing-proxy # controls the naming of the packages
+  - id: devcycle-sdk-proxy
+    package_name: devcycle-sdk-proxy # controls the naming of the packages
     file_name_template: "{{ .ConventionalFileName }}"
     vendor: DevCycle
     homepage: https://devcycle.com/
     maintainer: DevCycle <support@devcycle.com>
     description: |-
-      DevCycle Local Bucketing Proxy. Used to emulate the DevCycle cloud bucketing API locally to enable 
+      DevCycle SDK Proxy. Used to emulate the DevCycle cloud bucketing API, config CDN, and Events API locally to enable 
       local bucketing in languages that do not support WebAssembly.
     license: MIT
     contents:
       - src: config.json.example
-        dst: /etc/devcycle-local-bucketing-proxy/config.json.example
+        dst: /etc/devcycle-sdk-proxy/config.json.example
         type: config
     formats:
       - apk
       - deb
       - rpm
     provides:
-      - devcycle-local-bucketing-proxy
+      - devcycle-sdk-proxy
     suggests:
       - nginx
     version_metadata: git

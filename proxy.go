@@ -52,6 +52,7 @@ func NewBucketingProxyInstance(instance *ProxyInstance) (*ProxyInstance, error) 
 		if _, err = os.Stat(instance.UnixSocketPath); err == nil {
 			return nil, fmt.Errorf("unix socket path %s already exists. Skipping instance creation", instance.UnixSocketPath)
 		}
+		err = nil
 		go func() {
 			err = r.RunUnix(instance.UnixSocketPath)
 			if err != nil {
@@ -65,5 +66,5 @@ func NewBucketingProxyInstance(instance *ProxyInstance) (*ProxyInstance, error) 
 		}()
 		log.Printf("Running on unix socket: %s", instance.UnixSocketPath)
 	}
-	return instance, nil
+	return instance, err
 }

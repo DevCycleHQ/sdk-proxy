@@ -41,7 +41,7 @@ func NewBucketingProxyInstance(instance *ProxyInstance) (*ProxyInstance, error) 
 			return nil, fmt.Errorf("HTTP port must be set")
 		}
 		go func() {
-			err := r.Run(":" + strconv.Itoa(instance.HTTPPort))
+			err = r.Run(":" + strconv.Itoa(instance.HTTPPort))
 			if err != nil {
 				log.Printf("Error running HTTP server: %s", err)
 			}
@@ -49,13 +49,18 @@ func NewBucketingProxyInstance(instance *ProxyInstance) (*ProxyInstance, error) 
 		log.Printf("HTTP server started on port %d", instance.HTTPPort)
 	}
 	if instance.UnixSocketEnabled {
-		if _, err := os.Stat(instance.UnixSocketPath); err == nil {
+		if _, err = os.Stat(instance.UnixSocketPath); err == nil {
 			return nil, fmt.Errorf("unix socket path %s already exists. Skipping instance creation", instance.UnixSocketPath)
 		}
 		go func() {
-			err := r.RunUnix(instance.UnixSocketPath)
+			err = r.RunUnix(instance.UnixSocketPath)
 			if err != nil {
 				log.Printf("Error running Unix socket server: %s", err)
+			}
+			if instance.UnixSocket777 {
+				if err = os.Chmod(instance.UnixSocketPath, 0777); err != nil {
+					log.Printf("Error setting Unix socket permissions: %s", err)
+				}
 			}
 		}()
 		log.Printf("Running on unix socket: %s", instance.UnixSocketPath)

@@ -25,6 +25,7 @@ type ProxyInstance struct {
 	UnixSocketPath    string                `json:"unixSocketPath" envconfig:"UNIX_SOCKET_PATH" desc:"The path to the Unix socket."`
 	HTTPPort          int                   `json:"httpPort" envconfig:"HTTP_PORT" default:"8080" desc:"The port to listen on for HTTP requests. Defaults to 8080."`
 	UnixSocketEnabled bool                  `json:"unixSocketEnabled" envconfig:"UNIX_SOCKET_ENABLED" default:"false" desc:"Whether to enable the Unix socket. Defaults to false."`
+	UnixSocket777     bool                  `json:"unixSocket777,omitempty" envconfig:"UNIX_SOCKET_777" default:"false" desc:"Whether to set the Unix socket permissions to 777. Defaults to false."`
 	HTTPEnabled       bool                  `json:"httpEnabled" envconfig:"HTTP_ENABLED" default:"true" desc:"Whether to enable the HTTP server. Defaults to true."`
 	SDKKey            string                `json:"sdkKey" required:"true" envconfig:"SDK_KEY" desc:"The Server SDK key to use for this instance."`
 	PlatformData      devcycle.PlatformData `json:"platformData" required:"true"`

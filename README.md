@@ -11,17 +11,21 @@ The application is delivered in multiple formats - a Docker image, a deb, and RP
 format for local building and implementation.
 
 The proxy handles two modes of operation - you can expose the HTTP server over a TCP port, or over Unix domain sockets.
-The latter is recommended for servers that will deploy this with the proxy running on the same machine as the SDK, preventing the need for network calls.
+The latter is recommended for servers that will deploy this with the proxy running on the same machine as the SDK,
+preventing the need for network calls.
 
-The HTTP server mode is a 1:1 replacement for the Bucketing API used by all SDKs in cloud bucketing mode, or can be used directly without an SDK as an API.
+The HTTP server mode is a 1:1 replacement for the Bucketing API used by all SDKs in cloud bucketing mode, or can be used
+directly without an SDK as an API.
 
 ### Docker
 
 The docker image published here is the base runtime version - expecting to be used as a base image for you to extend.
-The docker image expects that you use the environment variables to configure the proxy, but can be modified and extended to use a configuration
-file instead. 
+The docker image expects that you use the environment variables to configure the proxy, but can be modified and extended
+to use a configuration
+file instead.
 
-We also provide the raw application binary to wrap in your own daemon manager, or tie into your existing application lifecycle.
+We also provide the raw application binary to wrap in your own daemon manager, or tie into your existing application
+lifecycle.
 
 ## Options
 
@@ -29,6 +33,12 @@ Either a path to a config file which allows specifying multiple instances of a p
 used to configure the proxy.
 
 A simple healthcheck for each proxy instance can be performed by sending a GET request to the `/healthz` endpoint.
+
+Due to various deployment configurations - we recommend setting the file permissions for the resulting proxy file to be
+as restrictive as possible in your deployment scenario. However, to prevent issues with deployment, we provide the option
+to set the permissions to 777 via the `DVC_LB_PROXY_UNIX_SOCKET_777` environment variable, or the `unixSocket777` option
+in the config. This is not recommended for production deployments, but can be useful for testing locally, or whenever
+deployment configurations are not possible to set the permissions yourself later.
 
 ### Command Line Arguments
 
@@ -41,10 +51,11 @@ A simple healthcheck for each proxy instance can be performed by sending a GET r
 
 | KEY                                                    | TYPE          | DEFAULT | REQUIRED | DESCRIPTION                                                                     |
 |--------------------------------------------------------|---------------|---------|----------|---------------------------------------------------------------------------------|
-| DVC_LB_PROXY_CONFIG                                     | String        |         |          | The path to a JSON configuration file. |
+| DVC_LB_PROXY_CONFIG                                    | String        |         |          | The path to a JSON configuration file.                                          |
 | DVC_LB_PROXY_UNIX_SOCKET_PATH                          | String        |         |          | The path to the Unix socket.                                                    |
 | DVC_LB_PROXY_HTTP_PORT                                 | Integer       | 8080    |          | The port to listen on for HTTP requests. Defaults to 8080.                      |
 | DVC_LB_PROXY_UNIX_SOCKET_ENABLED                       | True or False | false   |          | Whether to enable the Unix socket. Defaults to false.                           |
+| DVC_LB_PROXY_UNIX_SOCKET_777                           | True or False | false   |          | Whether to set the Unix socket permissions to 777. Defaults to false.           |
 | DVC_LB_PROXY_HTTP_ENABLED                              | True or False | true    |          | Whether to enable the HTTP server. Defaults to true.                            |
 | DVC_LB_PROXY_SDK_KEY                                   | String        |         | true     | The Server SDK key to use for this instance.                                    |
 | DVC_LB_PROXY_PLATFORMDATA_SDKTYPE                      | String        |         |          |                                                                                 |

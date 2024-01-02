@@ -23,7 +23,7 @@ type ProxyConfig struct {
 
 type ProxyInstance struct {
 	UnixSocketPath        string                `json:"unixSocketPath" envconfig:"UNIX_SOCKET_PATH" desc:"The path to the Unix socket."`
-	UnixSocketPermissions int                   `json:"unixSocketPermissions" envconfig:"UNIX_SOCKET_PERMISSIONS" default:"0755" desc:"The permissions to set on the Unix socket. Defaults to 0755"`
+	UnixSocketPermissions int                   `json:"unixSocketPermissions" envconfig:"UNIX_SOCKET_PERMISSIONS" default:"755" desc:"The permissions to set on the Unix socket. Defaults to 0755"`
 	UnixSocketEnabled     bool                  `json:"unixSocketEnabled" envconfig:"UNIX_SOCKET_ENABLED" default:"false" desc:"Whether to enable the Unix socket. Defaults to false."`
 	HTTPPort              int                   `json:"httpPort" envconfig:"HTTP_PORT" default:"8080" desc:"The port to listen on for HTTP requests. Defaults to 8080."`
 	HTTPEnabled           bool                  `json:"httpEnabled" envconfig:"HTTP_ENABLED" default:"true" desc:"Whether to enable the HTTP server. Defaults to true."`
@@ -82,7 +82,7 @@ func (i *ProxyInstance) Default() {
 			i.UnixSocketPath = "/tmp/devcycle.sock"
 		}
 		if i.UnixSocketPermissions == 0 {
-			i.UnixSocketPermissions = 0755
+			i.UnixSocketPermissions = 755
 		}
 	}
 }

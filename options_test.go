@@ -33,13 +33,14 @@ func TestParseConfig(t *testing.T) {
 			expected: &ProxyConfig{
 				Instances: []*ProxyInstance{
 					{
-						UnixSocketPath:    "",
-						HTTPPort:          8080,
-						UnixSocketEnabled: false,
-						HTTPEnabled:       true,
-						SDKKey:            "dvc-test-key",
-						PlatformData:      api.PlatformData{},
-						SDKConfig:         SDKConfig{},
+						UnixSocketPath:        "",
+						UnixSocketPermissions: 755,
+						HTTPPort:              8080,
+						UnixSocketEnabled:     false,
+						HTTPEnabled:           true,
+						SDKKey:                "dvc-test-key",
+						PlatformData:          api.PlatformData{},
+						SDKConfig:             SDKConfig{},
 					},
 				},
 			},
@@ -72,11 +73,12 @@ func TestParseConfig(t *testing.T) {
 			expected: &ProxyConfig{
 				Instances: []*ProxyInstance{
 					{
-						UnixSocketPath:    "/tmp/dvc2.sock",
-						HTTPPort:          1234,
-						UnixSocketEnabled: true,
-						HTTPEnabled:       false,
-						SDKKey:            "dvc-test-key",
+						UnixSocketPath:        "/tmp/dvc2.sock",
+						HTTPPort:              1234,
+						UnixSocketEnabled:     true,
+						UnixSocketPermissions: 755,
+						HTTPEnabled:           false,
+						SDKKey:                "dvc-test-key",
 						PlatformData: api.PlatformData{
 							SdkType:         "sdk type",
 							SdkVersion:      "v1.2.3",

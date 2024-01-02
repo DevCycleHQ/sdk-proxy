@@ -58,10 +58,9 @@ func NewBucketingProxyInstance(instance *ProxyInstance) (*ProxyInstance, error) 
 			if err != nil {
 				log.Printf("Error running Unix socket server: %s", err)
 			}
-			if instance.UnixSocket777 {
-				if err = os.Chmod(instance.UnixSocketPath, 0777); err != nil {
-					log.Printf("Error setting Unix socket permissions: %s", err)
-				}
+			fileMode := os.FileMode(instance.UnixSocketPermissions)
+			if err = os.Chmod(instance.UnixSocketPath, fileMode); err != nil {
+				log.Printf("Error setting Unix socket permissions: %s", err)
 			}
 		}()
 		log.Printf("Running on unix socket: %s", instance.UnixSocketPath)

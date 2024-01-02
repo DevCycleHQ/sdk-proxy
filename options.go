@@ -22,15 +22,15 @@ type ProxyConfig struct {
 }
 
 type ProxyInstance struct {
-	UnixSocketPath    string                `json:"unixSocketPath" envconfig:"UNIX_SOCKET_PATH" desc:"The path to the Unix socket."`
-	HTTPPort          int                   `json:"httpPort" envconfig:"HTTP_PORT" default:"8080" desc:"The port to listen on for HTTP requests. Defaults to 8080."`
-	UnixSocketEnabled bool                  `json:"unixSocketEnabled" envconfig:"UNIX_SOCKET_ENABLED" default:"false" desc:"Whether to enable the Unix socket. Defaults to false."`
-	UnixSocket777     bool                  `json:"unixSocket777,omitempty" envconfig:"UNIX_SOCKET_777" default:"false" desc:"Whether to set the Unix socket permissions to 777. Defaults to false."`
-	HTTPEnabled       bool                  `json:"httpEnabled" envconfig:"HTTP_ENABLED" default:"true" desc:"Whether to enable the HTTP server. Defaults to true."`
-	SDKKey            string                `json:"sdkKey" required:"true" envconfig:"SDK_KEY" desc:"The Server SDK key to use for this instance."`
-	PlatformData      devcycle.PlatformData `json:"platformData" required:"true"`
-	SDKConfig         SDKConfig             `json:"sdkConfig" required:"true"`
-	dvcClient         *devcycle.Client
+	UnixSocketPath        string                `json:"unixSocketPath" envconfig:"UNIX_SOCKET_PATH" desc:"The path to the Unix socket."`
+	UnixSocketPermissions int                   `json:"unixSocketPermissions" envconfig:"UNIX_SOCKET_PERMISSIONS" default:"0755" desc:"The permissions to set on the Unix socket. Defaults to 0755"`
+	UnixSocketEnabled     bool                  `json:"unixSocketEnabled" envconfig:"UNIX_SOCKET_ENABLED" default:"false" desc:"Whether to enable the Unix socket. Defaults to false."`
+	HTTPPort              int                   `json:"httpPort" envconfig:"HTTP_PORT" default:"8080" desc:"The port to listen on for HTTP requests. Defaults to 8080."`
+	HTTPEnabled           bool                  `json:"httpEnabled" envconfig:"HTTP_ENABLED" default:"true" desc:"Whether to enable the HTTP server. Defaults to true."`
+	SDKKey                string                `json:"sdkKey" required:"true" envconfig:"SDK_KEY" desc:"The Server SDK key to use for this instance."`
+	PlatformData          devcycle.PlatformData `json:"platformData" required:"true"`
+	SDKConfig             SDKConfig             `json:"sdkConfig" required:"true"`
+	dvcClient             *devcycle.Client
 }
 
 type SDKConfig struct {
@@ -77,8 +77,13 @@ func (i *ProxyInstance) Default() {
 	if i.HTTPEnabled && i.HTTPPort == 0 {
 		i.HTTPPort = 8080
 	}
-	if i.UnixSocketEnabled && i.UnixSocketPath == "" {
-		i.UnixSocketPath = "/tmp/devcycle.sock"
+	if i.UnixSocketEnabled {
+		if i.UnixSocketPath == "" {
+			i.UnixSocketPath = "/tmp/devcycle.sock"
+		}
+		if i.UnixSocketPermissions == 0 {
+			i.UnixSocketPermissions = 0755
+		}
 	}
 }
 func (c *ProxyConfig) Default() {

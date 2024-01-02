@@ -35,10 +35,9 @@ used to configure the proxy.
 A simple healthcheck for each proxy instance can be performed by sending a GET request to the `/healthz` endpoint.
 
 Due to various deployment configurations - we recommend setting the file permissions for the resulting proxy file to be
-as restrictive as possible in your deployment scenario. However, to prevent issues with deployment, we provide the option
-to set the permissions to 777 via the `DVC_LB_PROXY_UNIX_SOCKET_777` environment variable, or the `unixSocket777` option
-in the config. This is not recommended for production deployments, but can be useful for testing locally, or whenever
-deployment configurations are not possible to set the permissions yourself later.
+as restrictive as possible in your deployment scenario. However, to prevent issues with deployment, we provide the
+option to set the permissions to your own custom mask via the `DVC_LB_PROXY_UNIX_SOCKET_PERMISSIONS` environment
+variable, or the `unixSocketPermissions` option in the config file. The default is `0755`.
 
 ### Command Line Arguments
 
@@ -55,7 +54,7 @@ deployment configurations are not possible to set the permissions yourself later
 | DVC_LB_PROXY_UNIX_SOCKET_PATH                          | String        |         |          | The path to the Unix socket.                                                    |
 | DVC_LB_PROXY_HTTP_PORT                                 | Integer       | 8080    |          | The port to listen on for HTTP requests. Defaults to 8080.                      |
 | DVC_LB_PROXY_UNIX_SOCKET_ENABLED                       | True or False | false   |          | Whether to enable the Unix socket. Defaults to false.                           |
-| DVC_LB_PROXY_UNIX_SOCKET_777                           | True or False | false   |          | Whether to set the Unix socket permissions to 777. Defaults to false.           |
+| DVC_LB_PROXY_UNIX_SOCKET_PERMISSIONS                   | String        | 0755    |          | The permissions to set on the Unix socket. Defaults to 0755                     |
 | DVC_LB_PROXY_HTTP_ENABLED                              | True or False | true    |          | Whether to enable the HTTP server. Defaults to true.                            |
 | DVC_LB_PROXY_SDK_KEY                                   | String        |         | true     | The Server SDK key to use for this instance.                                    |
 | DVC_LB_PROXY_PLATFORMDATA_SDKTYPE                      | String        |         |          |                                                                                 |

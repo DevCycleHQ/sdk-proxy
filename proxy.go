@@ -65,5 +65,5 @@ func NewBucketingProxyInstance(instance *ProxyInstance) (*ProxyInstance, error) 
 		}()
 		log.Printf("Running on unix socket: %s", instance.UnixSocketPath)
 	}
-	return instance, err
+	return instance, nil
 }

@@ -171,6 +171,7 @@ func ParseConfig(configPath string) (*ProxyConfig, error) {
 		if err != nil {
 			return nil, fmt.Errorf("failed to parse config from JSON: %w", err)
 		}
+		proxyConfig.Default()
 	}
 
 	if !initialConfig.Debug {
@@ -188,11 +189,12 @@ func SampleProxyConfig() ProxyConfig {
 
 	proxyConfig := ProxyConfig{
 		Instances: []*ProxyInstance{{
-			UnixSocketPath:    "/tmp/devcycle.sock",
-			HTTPPort:          8080,
-			UnixSocketEnabled: false,
-			HTTPEnabled:       true,
-			SDKKey:            "",
+			UnixSocketPath:        "/tmp/devcycle.sock",
+			HTTPPort:              8080,
+			UnixSocketEnabled:     false,
+			UnixSocketPermissions: 755,
+			HTTPEnabled:           true,
+			SDKKey:                "",
 			PlatformData: devcycle.PlatformData{
 				SdkType:         "server",
 				SdkVersion:      devcycle.VERSION,

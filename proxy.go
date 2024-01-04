@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 	"strconv"
+	"time"
 
 	devcycle "github.com/devcyclehq/go-server-sdk/v2"
 	"github.com/gin-gonic/gin"
@@ -58,12 +59,16 @@ func NewBucketingProxyInstance(instance *ProxyInstance) (*ProxyInstance, error) 
 			if err != nil {
 				log.Printf("Error running Unix socket server: %s", err)
 			}
-			fileMode := os.FileMode(instance.UnixSocketPermissions)
-			if err = os.Chmod(instance.UnixSocketPath, fileMode); err != nil {
-				log.Printf("Error setting Unix socket permissions: %s", err)
-			}
 		}()
-		log.Printf("Running on unix socket: %s", instance.UnixSocketPath)
+		fileMode := os.FileMode(instance.UnixSocketPermissions)
+		_, err = os.Stat(instance.UnixSocketPath)
+		for ; err != nil; _, err = os.Stat(instance.UnixSocketPath) {
+			time.Sleep(1 * time.Second)
+		}
+		if err = os.Chmod(instance.UnixSocketPath, fileMode); err != nil {
+			log.Printf("Error setting Unix socket permissions: %s", err)
+		}
+		log.Printf("Running on unix socket: %s with file permissions %d", instance.UnixSocketPath, instance.UnixSocketPermissions)
 	}
 	return instance, err
 }

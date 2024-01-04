@@ -34,10 +34,10 @@ used to configure the proxy.
 
 A simple healthcheck for each proxy instance can be performed by sending a GET request to the `/healthz` endpoint.
 
-Due to various deployment configurations - we recommend setting the file permissions for the resulting proxy file to be
-as restrictive as possible in your deployment scenario. However, to prevent issues with deployment, we provide the
-option to set the permissions to your own custom mask via the `DVC_LB_PROXY_UNIX_SOCKET_PERMISSIONS` environment
-variable, or the `unixSocketPermissions` option in the config file. The default is `0755`.
+We recommend setting the file permissions for the unix socket to be as restrictive as possible. However, as a workaround
+for deployment issues, you can set the permissions to your own custom mask via the
+`DVC_LB_PROXY_UNIX_SOCKET_PERMISSIONS` environment variable, or the unixSocketPermissions option in the config file. The
+default is 0755
 
 ### Command Line Arguments
 

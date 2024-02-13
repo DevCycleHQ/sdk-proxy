@@ -28,6 +28,7 @@ type ProxyInstance struct {
 	HTTPPort              int                   `json:"httpPort" envconfig:"HTTP_PORT" default:"8080" desc:"The port to listen on for HTTP requests. Defaults to 8080."`
 	HTTPEnabled           bool                  `json:"httpEnabled" envconfig:"HTTP_ENABLED" default:"true" desc:"Whether to enable the HTTP server. Defaults to true."`
 	SDKKey                string                `json:"sdkKey" required:"true" envconfig:"SDK_KEY" desc:"The Server SDK key to use for this instance."`
+	LogFile               string                `json:"logFile" default:"/var/log/devcycle.log" envconfig:"LOG_FILE" desc:"The path to the log file. Defaults to /var/log/devcycle.log"`
 	PlatformData          devcycle.PlatformData `json:"platformData" required:"true"`
 	SDKConfig             SDKConfig             `json:"sdkConfig" required:"true"`
 	dvcClient             *devcycle.Client
@@ -76,6 +77,9 @@ func (i *ProxyInstance) Default() {
 	i.SDKConfig.Default()
 	if i.HTTPEnabled && i.HTTPPort == 0 {
 		i.HTTPPort = 8080
+	}
+	if i.LogFile == "" {
+		i.LogFile = "/var/log/devcycle.log"
 	}
 	if i.UnixSocketEnabled {
 		if i.UnixSocketPath == "" {

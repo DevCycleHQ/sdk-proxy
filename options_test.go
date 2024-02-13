@@ -12,6 +12,8 @@ import (
 )
 
 func TestParseConfig(t *testing.T) {
+	defaultSDKConfig := SDKConfig{}
+	defaultSDKConfig.Default()
 	tests := []struct {
 		name        string
 		flag        string
@@ -39,6 +41,7 @@ func TestParseConfig(t *testing.T) {
 						UnixSocketEnabled:     false,
 						HTTPEnabled:           true,
 						SDKKey:                "dvc-test-key",
+						LogFile:               "/var/log/devcycle.log",
 						PlatformData:          api.PlatformData{},
 						SDKConfig:             SDKConfig{},
 					},
@@ -79,6 +82,7 @@ func TestParseConfig(t *testing.T) {
 						UnixSocketPermissions: 755,
 						HTTPEnabled:           false,
 						SDKKey:                "dvc-test-key",
+						LogFile:               "/var/log/devcycle.log",
 						PlatformData: api.PlatformData{
 							SdkType:         "sdk type",
 							SdkVersion:      "v1.2.3",
@@ -120,8 +124,9 @@ func TestParseConfig(t *testing.T) {
 						UnixSocketEnabled: false,
 						HTTPEnabled:       false,
 						SDKKey:            "dvc-sample-key",
+						LogFile:           "/var/log/devcycle.log",
 						PlatformData:      api.PlatformData{},
-						SDKConfig:         SDKConfig{},
+						SDKConfig:         defaultSDKConfig,
 					},
 				},
 			},
@@ -139,8 +144,9 @@ func TestParseConfig(t *testing.T) {
 						UnixSocketEnabled: false,
 						HTTPEnabled:       false,
 						SDKKey:            "dvc-sample-key",
+						LogFile:           "/var/log/devcycle.log",
 						PlatformData:      api.PlatformData{},
-						SDKConfig:         SDKConfig{},
+						SDKConfig:         defaultSDKConfig,
 					},
 				},
 			},
@@ -157,6 +163,8 @@ func TestParseConfig(t *testing.T) {
 						UnixSocketEnabled: false,
 						HTTPEnabled:       true,
 						SDKKey:            "dvc_YOUR_KEY_HERE",
+						LogFile:           "/var/log/devcycle.log",
+
 						PlatformData: api.PlatformData{
 							SdkType:         "server",
 							SdkVersion:      "2.10.2",

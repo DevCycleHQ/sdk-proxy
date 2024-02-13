@@ -2,6 +2,7 @@ package local_bucketing_proxy
 
 import (
 	"fmt"
+	"io"
 	"log"
 	"os"
 	"strconv"
@@ -12,6 +13,16 @@ import (
 )
 
 func NewBucketingProxyInstance(instance *ProxyInstance) (*ProxyInstance, error) {
+	gin.DisableConsoleColor()
+	logFile, err := os.OpenFile(instance.LogFile, os.O_CREATE|os.O_APPEND|os.O_RDWR, 0666)
+	if err != nil {
+		_ = fmt.Errorf("error opening log file: %s", err)
+		return nil, err
+	}
+	mw := io.MultiWriter(os.Stdout, logFile)
+	log.SetOutput(mw)
+	gin.DefaultWriter = mw
+
 	options := instance.BuildDevCycleOptions()
 	client, err := devcycle.NewClient(instance.SDKKey, options)
 	instance.dvcClient = client

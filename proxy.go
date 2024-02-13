@@ -2,15 +2,27 @@ package local_bucketing_proxy
 
 import (
 	"fmt"
+	"io"
 	"log"
 	"os"
 	"strconv"
+	"time"
 
 	devcycle "github.com/devcyclehq/go-server-sdk/v2"
 	"github.com/gin-gonic/gin"
 )
 
 func NewBucketingProxyInstance(instance *ProxyInstance) (*ProxyInstance, error) {
+	gin.DisableConsoleColor()
+	logFile, err := os.OpenFile(instance.LogFile, os.O_CREATE|os.O_APPEND|os.O_RDWR, 0666)
+	if err != nil {
+		_ = fmt.Errorf("error opening log file: %s", err)
+		return nil, err
+	}
+	mw := io.MultiWriter(os.Stdout, logFile)
+	log.SetOutput(mw)
+	gin.DefaultWriter = mw
+
 	options := instance.BuildDevCycleOptions()
 	client, err := devcycle.NewClient(instance.SDKKey, options)
 	instance.dvcClient = client
@@ -41,7 +53,7 @@ func NewBucketingProxyInstance(instance *ProxyInstance) (*ProxyInstance, error) 
 			return nil, fmt.Errorf("HTTP port must be set")
 		}
 		go func() {
-			err := r.Run(":" + strconv.Itoa(instance.HTTPPort))
+			err = r.Run(":" + strconv.Itoa(instance.HTTPPort))
 			if err != nil {
 				log.Printf("Error running HTTP server: %s", err)
 			}
@@ -49,16 +61,25 @@ func NewBucketingProxyInstance(instance *ProxyInstance) (*ProxyInstance, error) 
 		log.Printf("HTTP server started on port %d", instance.HTTPPort)
 	}
 	if instance.UnixSocketEnabled {
-		if _, err := os.Stat(instance.UnixSocketPath); err == nil {
+		if _, err = os.Stat(instance.UnixSocketPath); err == nil {
 			return nil, fmt.Errorf("unix socket path %s already exists. Skipping instance creation", instance.UnixSocketPath)
 		}
+		err = nil
 		go func() {
-			err := r.RunUnix(instance.UnixSocketPath)
+			err = r.RunUnix(instance.UnixSocketPath)
 			if err != nil {
 				log.Printf("Error running Unix socket server: %s", err)
 			}
 		}()
-		log.Printf("Running on unix socket: %s", instance.UnixSocketPath)
+		fileMode := os.FileMode(instance.UnixSocketPermissions)
+		_, err = os.Stat(instance.UnixSocketPath)
+		for ; err != nil; _, err = os.Stat(instance.UnixSocketPath) {
+			time.Sleep(1 * time.Second)
+		}
+		if err = os.Chmod(instance.UnixSocketPath, fileMode); err != nil {
+			log.Printf("Error setting Unix socket permissions: %s", err)
+		}
+		log.Printf("Running on unix socket: %s with file permissions %d", instance.UnixSocketPath, instance.UnixSocketPermissions)
 	}
 	return instance, err
 }

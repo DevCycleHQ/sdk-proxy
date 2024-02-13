@@ -6,6 +6,7 @@
       "unixSocketEnabled": false,
       "httpEnabled": true,
       "sdkKey": "dvc_YOUR_KEY_HERE",
+      "logFile": "/var/log/devcycle.log",
       "platformData": {
         "sdkType": "server",
         "sdkVersion": "2.10.2",

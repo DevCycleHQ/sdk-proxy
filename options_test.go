@@ -36,7 +36,7 @@ func TestParseConfig(t *testing.T) {
 				Instances: []*ProxyInstance{
 					{
 						UnixSocketPath:        "",
-						UnixSocketPermissions: 755,
+						UnixSocketPermissions: "0755",
 						HTTPPort:              8080,
 						UnixSocketEnabled:     false,
 						HTTPEnabled:           true,
@@ -79,7 +79,7 @@ func TestParseConfig(t *testing.T) {
 						UnixSocketPath:        "/tmp/dvc2.sock",
 						HTTPPort:              1234,
 						UnixSocketEnabled:     true,
-						UnixSocketPermissions: 755,
+						UnixSocketPermissions: "0755",
 						HTTPEnabled:           false,
 						SDKKey:                "dvc-test-key",
 						LogFile:               "/var/log/devcycle.log",

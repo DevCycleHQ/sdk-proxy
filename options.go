@@ -64,7 +64,6 @@ func (i *ProxyInstance) BuildDevCycleOptions() *devcycle.Options {
 		ConfigCDNURI:                 i.SDKConfig.ConfigCDNURI,
 		EventsAPIURI:                 i.SDKConfig.EventsAPIURI,
 		Logger:                       nil,
-		UseDebugWASM:                 false,
 		AdvancedOptions: devcycle.AdvancedOptions{
 			OverridePlatformData: &i.PlatformData,
 		},

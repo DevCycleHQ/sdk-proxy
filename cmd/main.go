@@ -9,7 +9,7 @@ import (
 	"os/signal"
 	"syscall"
 
-	lbproxy "github.com/devcyclehq/local-bucketing-proxy"
+	sdkproxy "github.com/devcyclehq/sdk-proxy"
 	"github.com/kelseyhightower/envconfig"
 )
 
@@ -33,11 +33,11 @@ func main() {
 
 		log.Printf("Usage: %s [options]\n", os.Args[0])
 		flag.PrintDefaults()
-		_ = envconfig.Usagef(lbproxy.EnvVarPrefix, &lbproxy.FullEnvConfig{}, os.Stderr, EnvConfigFormat)
+		_ = envconfig.Usagef(sdkproxy.EnvVarPrefix, &sdkproxy.FullEnvConfig{}, os.Stderr, EnvConfigFormat)
 	}
 	flag.Parse()
 
-	config, err := lbproxy.ParseConfig(configPath)
+	config, err := sdkproxy.ParseConfig(configPath)
 	if err != nil {
 		log.Printf("Failed to parse config: %s", err)
 		log.Fatal("Please either set the config path or set the environment variables")
@@ -52,7 +52,7 @@ func main() {
 		log.Printf("Creating bucketing proxy instance: %+v", instance)
 
 		// Create client
-		_, err := lbproxy.NewBucketingProxyInstance(instance)
+		_, err = sdkproxy.NewBucketingProxyInstance(instance)
 		if err != nil {
 			log.Fatal(err)
 		}

@@ -1,4 +1,4 @@
-module github.com/devcyclehq/local-bucketing-proxy
+module github.com/devcyclehq/sdk-proxy
 
 go 1.20
 

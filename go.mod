@@ -3,7 +3,7 @@ module github.com/devcyclehq/sdk-proxy
 go 1.20
 
 require (
-	github.com/devcyclehq/go-server-sdk/v2 v2.14.0
+	github.com/devcyclehq/go-server-sdk/v2 v2.15.0
 	github.com/gin-gonic/gin v1.10.0
 	github.com/kelseyhightower/envconfig v1.4.0
 	github.com/kr/pretty v0.3.1

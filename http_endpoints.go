@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	devcycle "github.com/devcyclehq/go-server-sdk/v2"
+	devcycle_api "github.com/devcyclehq/go-server-sdk/v2/api"
 	"github.com/gin-gonic/gin"
 )
 
@@ -15,8 +16,9 @@ func Health(c *gin.Context) {
 	c.Status(200)
 }
 
-func Variable(client *devcycle.Client) gin.HandlerFunc {
+func Variable() gin.HandlerFunc {
 	return func(c *gin.Context) {
+		client := c.Value("devcycle").(*devcycle.Client)
 		user := getUserFromBody(c)
 		if user == nil {
 			return
@@ -50,8 +52,10 @@ func Variable(client *devcycle.Client) gin.HandlerFunc {
 	}
 }
 
-func Feature(client *devcycle.Client) gin.HandlerFunc {
+func Feature() gin.HandlerFunc {
 	return func(c *gin.Context) {
+		client := c.Value("devcycle").(*devcycle.Client)
+
 		user := getUserFromBody(c)
 		if user == nil {
 			return
@@ -65,8 +69,10 @@ func Feature(client *devcycle.Client) gin.HandlerFunc {
 	}
 }
 
-func Track(client *devcycle.Client) gin.HandlerFunc {
+func Track() gin.HandlerFunc {
 	return func(c *gin.Context) {
+		client := c.Value("devcycle").(*devcycle.Client)
+
 		event := getEventFromBody(c)
 		for _, e := range event.Events {
 			_, err := client.Track(event.User.User, e)
@@ -77,8 +83,10 @@ func Track(client *devcycle.Client) gin.HandlerFunc {
 	}
 }
 
-func BatchEvents(client *devcycle.Client) gin.HandlerFunc {
+func BatchEvents() gin.HandlerFunc {
 	return func(c *gin.Context) {
+		client := c.Value("devcycle").(*devcycle.Client)
+
 		// Passthrough proxy to the configured events api endpoint.
 		httpC := http.DefaultClient
 		req, err := http.NewRequest("POST", client.DevCycleOptions.EventsAPIURI+"/v1/events/batch", c.Request.Body)
@@ -103,20 +111,61 @@ func BatchEvents(client *devcycle.Client) gin.HandlerFunc {
 	}
 }
 
-func GetConfig(client *devcycle.Client) gin.HandlerFunc {
+func GetConfig() gin.HandlerFunc {
 	return func(c *gin.Context) {
+		instance := c.Value("instance").(*ProxyInstance)
+		client := c.Value("devcycle").(*devcycle.Client)
+
 		if c.Param("sdkKey") == "" || !strings.HasSuffix(c.Param("sdkKey"), ".json") {
 			c.AbortWithStatus(http.StatusForbidden)
 			return
 		}
-
+		var ret []byte
 		rawConfig, etag, err := client.GetRawConfig()
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{})
 			return
 		}
+		if instance.SSEEnabled {
+			config := map[string]interface{}{}
+			err = json.Unmarshal(rawConfig, &config)
+			if err != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{})
+				return
+			}
+			hostname := fmt.Sprintf("http://%s:%d", instance.SSEHostname, instance.HTTPPort)
+			// This is the only indicator that a unix socket request was made
+			if c.Request.RemoteAddr == "" {
+				hostname = fmt.Sprintf("unix:%s", instance.UnixSocketPath)
+			}
+			fmt.Println(c.Request)
+			if val, ok := config["sse"]; ok {
+				path := val.(map[string]interface{})["path"].(string)
+
+				config["sse"] = devcycle_api.SSEHost{
+					Hostname: hostname,
+					Path:     path,
+				}
+			}
+
+			ret, err = json.Marshal(config)
+		} else {
+			ret = rawConfig
+		}
+
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{})
+			return
+		}
 		c.Header("ETag", etag)
-		c.Data(http.StatusOK, "application/json", rawConfig)
+		c.Data(http.StatusOK, "application/json", ret)
+	}
+}
+
+func SSE() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		instance := c.Value("instance").(*ProxyInstance)
+		instance.sseServer.Handler(instance.SDKKey).ServeHTTP(c.Writer, c.Request)
 	}
 }
 

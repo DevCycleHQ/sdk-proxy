@@ -36,7 +36,7 @@ A simple healthcheck for each proxy instance can be performed by sending a GET r
 
 We recommend setting the file permissions for the unix socket to be as restrictive as possible. However, as a workaround
 for deployment issues, you can set the permissions to your own custom mask via the
-`DVC_LB_PROXY_UNIX_SOCKET_PERMISSIONS` environment variable, or the unixSocketPermissions option in the config file. The
+`DEVCYCLE_PROXY_UNIX_SOCKET_PERMISSIONS` environment variable, or the unixSocketPermissions option in the config file. The
 default is 0755
 
 ### Command Line Arguments
@@ -48,27 +48,27 @@ default is 0755
 
 ### Environment Variables
 
-| KEY                                                    | TYPE          | DEFAULT | REQUIRED | DESCRIPTION                                                                     |
-|--------------------------------------------------------|---------------|---------|----------|---------------------------------------------------------------------------------|
-| DVC_LB_PROXY_CONFIG                                    | String        |         |          | The path to a JSON configuration file.                                          |
-| DVC_LB_PROXY_UNIX_SOCKET_PATH                          | String        |         |          | The path to the Unix socket.                                                    |
-| DVC_LB_PROXY_HTTP_PORT                                 | Integer       | 8080    |          | The port to listen on for HTTP requests. Defaults to 8080.                      |
-| DVC_LB_PROXY_UNIX_SOCKET_ENABLED                       | True or False | false   |          | Whether to enable the Unix socket. Defaults to false.                           |
-| DVC_LB_PROXY_UNIX_SOCKET_PERMISSIONS                   | String        | 0755    |          | The permissions to set on the Unix socket. Defaults to 0755                     |
-| DVC_LB_PROXY_HTTP_ENABLED                              | True or False | true    |          | Whether to enable the HTTP server. Defaults to true.                            |
-| DVC_LB_PROXY_SDK_KEY                                   | String        |         | true     | The Server SDK key to use for this instance.                                    |
-| DVC_LB_PROXY_PLATFORMDATA_SDKTYPE                      | String        |         |          |                                                                                 |
-| DVC_LB_PROXY_PLATFORMDATA_SDKVERSION                   | String        |         |          |                                                                                 |
-| DVC_LB_PROXY_PLATFORMDATA_PLATFORMVERSION              | String        |         |          |                                                                                 |
-| DVC_LB_PROXY_PLATFORMDATA_DEVICEMODEL                  | String        |         |          |                                                                                 |
-| DVC_LB_PROXY_PLATFORMDATA_PLATFORM                     | String        |         |          |                                                                                 |
-| DVC_LB_PROXY_PLATFORMDATA_HOSTNAME                     | String        |         |          |                                                                                 |
-| DVC_LB_PROXY_SDKCONFIG_EVENT_FLUSH_INTERVAL_MS         | Duration      |         |          | The interval at which events are flushed to the events api in milliseconds.     |
-| DVC_LB_PROXY_SDKCONFIG_CONFIG_POLLING_INTERVAL_MS      | Duration      |         |          | The interval at which the SDK polls the config CDN for updates in milliseconds. |
-| DVC_LB_PROXY_SDKCONFIG_REQUEST_TIMEOUT                 | Duration      |         |          | The timeout for requests to the config CDN and events API in milliseconds.      |
-| DVC_LB_PROXY_SDKCONFIG_DISABLE_AUTOMATIC_EVENT_LOGGING | True or False | false   |          | Whether to disable automatic event logging. Defaults to false.                  |
-| DVC_LB_PROXY_SDKCONFIG_DISABLE_CUSTOM_EVENT_LOGGING    | True or False | false   |          | Whether to disable custom event logging. Defaults to false.                     |
-| DVC_LB_PROXY_SDKCONFIG_MAX_EVENT_QUEUE_SIZE            | Integer       |         |          | The maximum number of events to be in the queue before dropping events.         |
-| DVC_LB_PROXY_SDKCONFIG_FLUSH_EVENT_QUEUE_SIZE          | Integer       |         |          | The minimum number of events to be in the queue before flushing events.         |
-| DVC_LB_PROXY_SDKCONFIG_CONFIG_CDN_URI                  | String        |         |          | The URI of the Config CDN - leave unspecified if not needing an outbound proxy. |
-| DVC_LB_PROXY_SDKCONFIG_EVENTSAPIURI                    | String        |         |          | The URI of the Events API - leave unspecified if not needing an outbound proxy. |
+| KEY                                                      | TYPE          | DEFAULT | REQUIRED | DESCRIPTION                                                                     |
+|----------------------------------------------------------|---------------|---------|----------|---------------------------------------------------------------------------------|
+| DEVCYCLE_PROXY_CONFIG                                    | String        |         |          | The path to a JSON configuration file.                                          |
+| DEVCYCLE_PROXY_UNIX_SOCKET_PATH                          | String        |         |          | The path to the Unix socket.                                                    |
+| DEVCYCLE_PROXY_HTTP_PORT                                 | Integer       | 8080    |          | The port to listen on for HTTP requests. Defaults to 8080.                      |
+| DEVCYCLE_PROXY_UNIX_SOCKET_ENABLED                       | True or False | false   |          | Whether to enable the Unix socket. Defaults to false.                           |
+| DEVCYCLE_PROXY_UNIX_SOCKET_PERMISSIONS                   | String        | 0755    |          | The permissions to set on the Unix socket. Defaults to 0755                     |
+| DEVCYCLE_PROXY_HTTP_ENABLED                              | True or False | true    |          | Whether to enable the HTTP server. Defaults to true.                            |
+| DEVCYCLE_PROXY_SDK_KEY                                   | String        |         | true     | The Server SDK key to use for this instance.                                    |
+| DEVCYCLE_PROXY_PLATFORMDATA_SDKTYPE                      | String        |         |          |                                                                                 |
+| DEVCYCLE_PROXY_PLATFORMDATA_SDKVERSION                   | String        |         |          |                                                                                 |
+| DEVCYCLE_PROXY_PLATFORMDATA_PLATFORMVERSION              | String        |         |          |                                                                                 |
+| DEVCYCLE_PROXY_PLATFORMDATA_DEVICEMODEL                  | String        |         |          |                                                                                 |
+| DEVCYCLE_PROXY_PLATFORMDATA_PLATFORM                     | String        |         |          |                                                                                 |
+| DEVCYCLE_PROXY_PLATFORMDATA_HOSTNAME                     | String        |         |          |                                                                                 |
+| DEVCYCLE_PROXY_SDKCONFIG_EVENT_FLUSH_INTERVAL_MS         | Duration      |         |          | The interval at which events are flushed to the events api in milliseconds.     |
+| DEVCYCLE_PROXY_SDKCONFIG_CONFIG_POLLING_INTERVAL_MS      | Duration      |         |          | The interval at which the SDK polls the config CDN for updates in milliseconds. |
+| DEVCYCLE_PROXY_SDKCONFIG_REQUEST_TIMEOUT                 | Duration      |         |          | The timeout for requests to the config CDN and events API in milliseconds.      |
+| DEVCYCLE_PROXY_SDKCONFIG_DISABLE_AUTOMATIC_EVENT_LOGGING | True or False | false   |          | Whether to disable automatic event logging. Defaults to false.                  |
+| DEVCYCLE_PROXY_SDKCONFIG_DISABLE_CUSTOM_EVENT_LOGGING    | True or False | false   |          | Whether to disable custom event logging. Defaults to false.                     |
+| DEVCYCLE_PROXY_SDKCONFIG_MAX_EVENT_QUEUE_SIZE            | Integer       |         |          | The maximum number of events to be in the queue before dropping events.         |
+| DEVCYCLE_PROXY_SDKCONFIG_FLUSH_EVENT_QUEUE_SIZE          | Integer       |         |          | The minimum number of events to be in the queue before flushing events.         |
+| DEVCYCLE_PROXY_SDKCONFIG_CONFIG_CDN_URI                  | String        |         |          | The URI of the Config CDN - leave unspecified if not needing an outbound proxy. |
+| DEVCYCLE_PROXY_SDKCONFIG_EVENTSAPIURI                    | String        |         |          | The URI of the Events API - leave unspecified if not needing an outbound proxy. |

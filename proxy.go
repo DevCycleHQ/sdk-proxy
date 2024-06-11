@@ -2,6 +2,8 @@ package local_bucketing_proxy
 
 import (
 	"fmt"
+	"github.com/devcyclehq/go-server-sdk/v2/api"
+	"github.com/launchdarkly/eventsource"
 	"io"
 	"log"
 	"os"
@@ -22,31 +24,20 @@ func NewBucketingProxyInstance(instance *ProxyInstance) (*ProxyInstance, error) 
 	mw := io.MultiWriter(os.Stdout, logFile)
 	log.SetOutput(mw)
 	gin.DefaultWriter = mw
+	if instance.SSEEnabled {
+		instance.sseEvents = make(chan api.ClientEvent, 100)
+		instance.sseServer = eventsource.NewServer()
+		instance.sseServer.ReplayAll = false
+		eventsource.NewSliceRepository()
+		go instance.EventRebroadcaster()
+		log.Printf("Initialized SSE server at %s", instance.SSEHostname)
+	}
 
 	options := instance.BuildDevCycleOptions()
 	client, err := devcycle.NewClient(instance.SDKKey, options)
 	instance.dvcClient = client
-	r := gin.New()
-	r.Use(gin.Logger())
-	r.Use(gin.Recovery())
 
-	r.GET("/healthz", Health)
-	v1 := r.Group("/v1")
-	v1.Use(DevCycleAuthRequired())
-	{
-		// Bucketing API
-		v1.POST("/variables/:key", Variable(client))
-		v1.POST("/variables", Variable(client))
-		v1.POST("/features", Feature(client))
-		v1.POST("/track", Track(client))
-		// Events API
-		v1.POST("/events", Track(client))
-		v1.POST("/events/batch", BatchEvents(client))
-	}
-	configCDNv1 := r.Group("/config/v1")
-	{
-		configCDNv1.GET("/server/:sdkKey", GetConfig(client))
-	}
+	r := newRouter(client, instance)
 
 	if instance.HTTPEnabled {
 		if instance.HTTPPort == 0 {
@@ -86,4 +77,49 @@ func NewBucketingProxyInstance(instance *ProxyInstance) (*ProxyInstance, error) 
 		log.Printf("Running on unix socket: %s with file permissions %s", instance.UnixSocketPath, instance.UnixSocketPermissions)
 	}
 	return instance, err
+}
+
+// Add the DevCycle client to the request context
+func devCycleMiddleware(client *devcycle.Client) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		c.Set("devcycle", client)
+		c.Next()
+	}
+}
+
+func sdkProxyMiddleware(instance *ProxyInstance) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		c.Set("instance", instance)
+		c.Next()
+	}
+}
+
+func newRouter(client *devcycle.Client, instance *ProxyInstance) *gin.Engine {
+	r := gin.New()
+
+	r.Use(gin.Logger())
+	r.Use(gin.Recovery())
+	r.Use(devCycleMiddleware(client))
+	r.Use(sdkProxyMiddleware(instance))
+	r.GET("/healthz", Health)
+	v1 := r.Group("/v1")
+	v1.Use(DevCycleAuthRequired())
+	{
+		// Bucketing API
+		v1.POST("/variables/:key", Variable())
+		v1.POST("/variables", Variable())
+		v1.POST("/features", Feature())
+		v1.POST("/track", Track())
+		// Events API
+		v1.POST("/events", Track())
+		v1.POST("/events/batch", BatchEvents())
+	}
+	configCDNv1 := r.Group("/config/v1")
+	{
+		configCDNv1.GET("/server/:sdkKey", GetConfig())
+	}
+
+	r.GET("/event-stream", SSE())
+
+	return r
 }

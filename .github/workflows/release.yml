@@ -56,7 +56,7 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
 
-      - uses: DevCycleHQ/release-action/prepare-release@v2
+      - uses: DevCycleHQ/release-action/prepare-release@v2.3.0
         id: prepare-release
         with:
           github-token: ${{ secrets.AUTOMATION_USER_TOKEN }}
@@ -78,7 +78,7 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-      - uses: DevCycleHQ/release-action/create-release@v2
+      - uses: DevCycleHQ/release-action/create-release@v2.3.0
         id: create-release
         with:
           github-token: ${{ secrets.AUTOMATION_USER_TOKEN }}

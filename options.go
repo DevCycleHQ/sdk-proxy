@@ -3,6 +3,8 @@ package local_bucketing_proxy
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/devcyclehq/go-server-sdk/v2/api"
+	"github.com/launchdarkly/eventsource"
 	"log"
 	"os"
 	"runtime"
@@ -14,7 +16,7 @@ import (
 )
 
 const (
-	EnvVarPrefix = "DVC_LB_PROXY"
+	EnvVarPrefix = "DEVCYCLE_PROXY"
 )
 
 type ProxyConfig struct {
@@ -27,11 +29,15 @@ type ProxyInstance struct {
 	UnixSocketEnabled     bool                  `json:"unixSocketEnabled" envconfig:"UNIX_SOCKET_ENABLED" default:"false" desc:"Whether to enable the Unix socket. Defaults to false."`
 	HTTPPort              int                   `json:"httpPort" envconfig:"HTTP_PORT" default:"8080" desc:"The port to listen on for HTTP requests. Defaults to 8080."`
 	HTTPEnabled           bool                  `json:"httpEnabled" envconfig:"HTTP_ENABLED" default:"true" desc:"Whether to enable the HTTP server. Defaults to true."`
+	SSEEnabled            bool                  `json:"sseEnabled" envconfig:"SSE_ENABLED" default:"false" desc:"Whether to enable the SSE server. Requires setting sseHostname param too. Defaults to false."`
+	SSEHostname           string                `json:"sseHostname" envconfig:"SSE_HOSTNAME" desc:"The hostname to provide to clients to connect to for SSE requests. This must be reachable from the clients and can be either a DNS hostname or a raw IP address."`
 	SDKKey                string                `json:"sdkKey" required:"true" envconfig:"SDK_KEY" desc:"The Server SDK key to use for this instance."`
 	LogFile               string                `json:"logFile" default:"/var/log/devcycle.log" envconfig:"LOG_FILE" desc:"The path to the log file. Defaults to /var/log/devcycle.log"`
 	PlatformData          devcycle.PlatformData `json:"platformData" required:"true"`
 	SDKConfig             SDKConfig             `json:"sdkConfig" required:"true"`
 	dvcClient             *devcycle.Client
+	sseServer             *eventsource.Server
+	sseEvents             chan api.ClientEvent
 }
 
 type SDKConfig struct {
@@ -63,13 +69,23 @@ func (i *ProxyInstance) BuildDevCycleOptions() *devcycle.Options {
 		FlushEventQueueSize:          i.SDKConfig.FlushEventQueueSize,
 		ConfigCDNURI:                 i.SDKConfig.ConfigCDNURI,
 		EventsAPIURI:                 i.SDKConfig.EventsAPIURI,
-		Logger:                       nil,
+		EnableBetaRealtimeUpdates:    i.SSEEnabled,
 		AdvancedOptions: devcycle.AdvancedOptions{
 			OverridePlatformData: &i.PlatformData,
 		},
+		ClientEventHandler: i.sseEvents,
 	}
 	options.CheckDefaults()
 	return &options
+}
+
+func (i *ProxyInstance) EventRebroadcaster() {
+	for event := range i.sseEvents {
+		if event.EventType == api.ClientEventType_RealtimeUpdates {
+			i.sseServer.Publish([]string{i.SDKKey}, event.EventData.(eventsource.Event))
+			log.Printf("Rebroadcasting SSE event: %s\n", event.EventData.(eventsource.Event).Data())
+		}
+	}
 }
 
 func (i *ProxyInstance) Default() {
@@ -86,6 +102,14 @@ func (i *ProxyInstance) Default() {
 		}
 		if i.UnixSocketPermissions == "" {
 			i.UnixSocketPermissions = "0755"
+		}
+	}
+	if i.SSEEnabled && i.SSEHostname == "" {
+		hostname, err := os.Hostname()
+		if err != nil {
+			i.SSEHostname = "localhost"
+		} else {
+			i.SSEHostname = hostname
 		}
 	}
 }

@@ -60,6 +60,7 @@ func (i *ProxyInstance) BuildDevCycleOptions() *devcycle.Options {
 	options := devcycle.Options{
 		EnableEdgeDB:                 false,
 		EnableCloudBucketing:         false,
+		DisableETagMatching:          true,
 		EventFlushIntervalMS:         time.Duration(i.SDKConfig.EventFlushIntervalMS) * time.Millisecond,
 		ConfigPollingIntervalMS:      time.Duration(i.SDKConfig.ConfigPollingIntervalMS) * time.Millisecond,
 		RequestTimeout:               time.Duration(i.SDKConfig.RequestTimeout) * time.Millisecond,

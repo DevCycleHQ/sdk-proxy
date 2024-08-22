@@ -34,19 +34,13 @@ func NewBucketingProxyInstance(instance *ProxyInstance) (*ProxyInstance, error) 
 	}
 
 	options := instance.BuildDevCycleOptions()
-	optionsV1 := instance.BuildDevCycleV1Options()
 	client, err := devcycle.NewClient(instance.SDKKey, options)
 	if err != nil {
 		return nil, fmt.Errorf("error creating DevCycle client: %v", err)
 	}
-
-	clientV1, err := devcycle.NewClient(instance.SDKKey, optionsV1)
-	if err != nil {
-		return nil, fmt.Errorf("error creating DevCycle V1 client: %v", err)
-	}
 	instance.dvcClient = client
 
-	r := newRouter(client, clientV1, instance)
+	r := newRouter(client, instance)
 
 	if instance.HTTPEnabled {
 		if instance.HTTPPort == 0 {
@@ -103,7 +97,7 @@ func sdkProxyMiddleware(instance *ProxyInstance) gin.HandlerFunc {
 	}
 }
 
-func newRouter(client *devcycle.Client, clientV1 *devcycle.Client, instance *ProxyInstance) *gin.Engine {
+func newRouter(client *devcycle.Client, instance *ProxyInstance) *gin.Engine {
 	r := gin.New()
 
 	r.Use(gin.Logger())
@@ -125,7 +119,7 @@ func newRouter(client *devcycle.Client, clientV1 *devcycle.Client, instance *Pro
 	}
 	configCDNv1 := r.Group("/config/v1")
 	{
-		configCDNv1.GET("/server/:sdkKey", GetConfig(clientV1))
+		configCDNv1.GET("/server/:sdkKey", GetConfig(nil))
 	}
 	configCDNv2 := r.Group("/config/v2")
 	{

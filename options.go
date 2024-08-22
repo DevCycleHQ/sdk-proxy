@@ -5,7 +5,9 @@ import (
 	"fmt"
 	"github.com/devcyclehq/go-server-sdk/v2/api"
 	"github.com/launchdarkly/eventsource"
+	"io"
 	"log"
+	"net/http"
 	"os"
 	"runtime"
 	"time"
@@ -38,6 +40,7 @@ type ProxyInstance struct {
 	dvcClient             *devcycle.Client
 	sseServer             *eventsource.Server
 	sseEvents             chan api.ClientEvent
+	bypassConfig          []byte
 }
 
 type SDKConfig struct {
@@ -81,10 +84,35 @@ func (i *ProxyInstance) BuildDevCycleOptions() *devcycle.Options {
 	return &options
 }
 
-func (i *ProxyInstance) BuildDevCycleV1Options() *devcycle.Options {
-	options := i.BuildDevCycleOptions()
-	options.AdvancedOptions.OverrideConfigWithV1 = true
-	return options
+func (i *ProxyInstance) BypassSDKConfig(version string) (config []byte, etag, lastModified string) {
+
+	request, err := http.NewRequest("GET", fmt.Sprintf("https://config-cdn.devcycle.com/config/%s/%s", version, i.SDKKey), nil)
+	if err != nil {
+		return i.bypassConfig, "", ""
+	}
+
+	resp, err := http.DefaultClient.Do(request)
+
+	if err != nil {
+		return i.bypassConfig, "", ""
+	}
+
+	if resp.StatusCode == http.StatusNotModified {
+		return i.bypassConfig, resp.Header.Get("ETag"), resp.Header.Get("Last-Modified")
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return i.bypassConfig, "", ""
+	}
+
+	body, err := io.ReadAll(resp.Body)
+	defer resp.Body.Close()
+	if err != nil {
+		return i.bypassConfig, "", ""
+	}
+
+	i.bypassConfig = body
+	return i.bypassConfig, resp.Header.Get("ETag"), resp.Header.Get("Last-Modified")
 }
 
 func (i *ProxyInstance) EventRebroadcaster() {

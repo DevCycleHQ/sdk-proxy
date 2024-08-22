@@ -119,7 +119,7 @@ func newRouter(client *devcycle.Client, instance *ProxyInstance) *gin.Engine {
 	}
 	configCDNv1 := r.Group("/config/v1")
 	{
-		configCDNv1.GET("/server/:sdkKey", GetConfig(nil))
+		configCDNv1.GET("/server/:sdkKey", GetConfig(nil, "v1"))
 	}
 	configCDNv2 := r.Group("/config/v2")
 	{

@@ -86,7 +86,7 @@ func (i *ProxyInstance) BuildDevCycleOptions() *devcycle.Options {
 
 func (i *ProxyInstance) BypassSDKConfig(version string) (config []byte, etag, lastModified string) {
 
-	request, err := http.NewRequest("GET", fmt.Sprintf("https://config-cdn.devcycle.com/config/%s/%s", version, i.SDKKey), nil)
+	request, err := http.NewRequest("GET", fmt.Sprintf("https://config-cdn.devcycle.com/config/%s/%s.json", version, i.SDKKey), nil)
 	if err != nil {
 		return i.bypassConfig, "", ""
 	}

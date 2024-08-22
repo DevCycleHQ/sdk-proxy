@@ -111,10 +111,9 @@ func BatchEvents() gin.HandlerFunc {
 	}
 }
 
-func GetConfig() gin.HandlerFunc {
+func GetConfig(client *devcycle.Client) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		instance := c.Value("instance").(*ProxyInstance)
-		client := c.Value("devcycle").(*devcycle.Client)
 
 		if c.Param("sdkKey") == "" || !strings.HasSuffix(c.Param("sdkKey"), ".json") {
 			c.AbortWithStatus(http.StatusForbidden)

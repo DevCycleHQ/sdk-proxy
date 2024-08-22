@@ -73,11 +73,18 @@ func (i *ProxyInstance) BuildDevCycleOptions() *devcycle.Options {
 		EnableBetaRealtimeUpdates:    i.SSEEnabled,
 		AdvancedOptions: devcycle.AdvancedOptions{
 			OverridePlatformData: &i.PlatformData,
+			OverrideConfigWithV1: false,
 		},
 		ClientEventHandler: i.sseEvents,
 	}
 	options.CheckDefaults()
 	return &options
+}
+
+func (i *ProxyInstance) BuildDevCycleV1Options() *devcycle.Options {
+	options := i.BuildDevCycleOptions()
+	options.AdvancedOptions.OverrideConfigWithV1 = true
+	return options
 }
 
 func (i *ProxyInstance) EventRebroadcaster() {

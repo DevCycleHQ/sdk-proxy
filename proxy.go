@@ -35,6 +35,9 @@ func NewBucketingProxyInstance(instance *ProxyInstance) (*ProxyInstance, error) 
 
 	options := instance.BuildDevCycleOptions()
 	client, err := devcycle.NewClient(instance.SDKKey, options)
+	if err != nil {
+		return nil, fmt.Errorf("error creating DevCycle client: %v", err)
+	}
 	instance.dvcClient = client
 
 	r := newRouter(client, instance)
@@ -116,9 +119,12 @@ func newRouter(client *devcycle.Client, instance *ProxyInstance) *gin.Engine {
 	}
 	configCDNv1 := r.Group("/config/v1")
 	{
-		configCDNv1.GET("/server/:sdkKey", GetConfig())
+		configCDNv1.GET("/server/:sdkKey", GetConfig(nil, "v1"))
 	}
-
+	configCDNv2 := r.Group("/config/v2")
+	{
+		configCDNv2.GET("/server/:sdkKey", GetConfig(client))
+	}
 	r.GET("/event-stream", SSE())
 
 	return r

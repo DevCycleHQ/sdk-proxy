@@ -111,53 +111,58 @@ func BatchEvents() gin.HandlerFunc {
 	}
 }
 
-func GetConfig() gin.HandlerFunc {
+func GetConfig(client *devcycle.Client, version ...string) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		instance := c.Value("instance").(*ProxyInstance)
-		client := c.Value("devcycle").(*devcycle.Client)
 
 		if c.Param("sdkKey") == "" || !strings.HasSuffix(c.Param("sdkKey"), ".json") {
 			c.AbortWithStatus(http.StatusForbidden)
 			return
 		}
-		var ret []byte
-		rawConfig, etag, err := client.GetRawConfig()
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{})
-			return
-		}
-		if instance.SSEEnabled {
-			config := map[string]interface{}{}
-			err = json.Unmarshal(rawConfig, &config)
+		var ret, rawConfig []byte
+		var etag, lm string
+		var err error
+		if client != nil {
+			rawConfig, etag, lm, err = client.GetRawConfig()
 			if err != nil {
 				c.JSON(http.StatusInternalServerError, gin.H{})
 				return
 			}
-			hostname := fmt.Sprintf("http://%s:%d", instance.SSEHostname, instance.HTTPPort)
-			// This is the only indicator that a unix socket request was made
-			if c.Request.RemoteAddr == "" {
-				hostname = fmt.Sprintf("unix:%s", instance.UnixSocketPath)
-			}
-			fmt.Println(c.Request)
-			if val, ok := config["sse"]; ok {
-				path := val.(map[string]interface{})["path"].(string)
-
-				config["sse"] = devcycle_api.SSEHost{
-					Hostname: hostname,
-					Path:     path,
+			if instance.SSEEnabled {
+				config := map[string]interface{}{}
+				err = json.Unmarshal(rawConfig, &config)
+				if err != nil {
+					c.JSON(http.StatusInternalServerError, gin.H{})
+					return
 				}
+				hostname := fmt.Sprintf("http://%s:%d", instance.SSEHostname, instance.HTTPPort)
+				// This is the only indicator that a unix socket request was made
+				if c.Request.RemoteAddr == "" {
+					hostname = fmt.Sprintf("unix:%s", instance.UnixSocketPath)
+				}
+				fmt.Println(c.Request)
+				if val, ok := config["sse"]; ok {
+					path := val.(map[string]interface{})["path"].(string)
+
+					config["sse"] = devcycle_api.SSEHost{
+						Hostname: hostname,
+						Path:     path,
+					}
+				}
+
+				ret, err = json.Marshal(config)
+			} else {
+				ret = rawConfig
 			}
-
-			ret, err = json.Marshal(config)
-		} else {
-			ret = rawConfig
-		}
-
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{})
-			return
+			if err != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{})
+				return
+			}
+		} else if client == nil && len(version) > 0 {
+			ret, etag, lm = instance.BypassSDKConfig(version[0])
 		}
 		c.Header("ETag", etag)
+		c.Header("Last-Modified", lm)
 		c.Data(http.StatusOK, "application/json", ret)
 	}
 }

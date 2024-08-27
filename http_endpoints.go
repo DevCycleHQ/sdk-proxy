@@ -1,6 +1,7 @@
 package local_bucketing_proxy
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -75,6 +76,10 @@ func Track() gin.HandlerFunc {
 
 		event := getEventFromBody(c)
 		for _, e := range event.Events {
+			if e.MetaData == nil {
+				e.MetaData = make(map[string]interface{})
+			}
+			e.MetaData["sdkProxy"] = Version
 			_, err := client.Track(event.User.User, e)
 			if err != nil {
 				c.JSON(http.StatusInternalServerError, gin.H{})
@@ -87,23 +92,82 @@ func BatchEvents() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		client := c.Value("devcycle").(*devcycle.Client)
 
+		body, err := io.ReadAll(c.Request.Body)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"message": "Error reading request body: " + err.Error()})
+			return
+		}
+
+		var batchEvents map[string]interface{}
+		err = json.Unmarshal(body, &batchEvents)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"message": "Error unmarshaling request body: " + err.Error()})
+			return
+		}
+
+		batchArray, exists := batchEvents["batch"].([]interface{})
+		if !exists {
+			c.JSON(http.StatusInternalServerError, gin.H{"message": "Missing 'batch' key in request body"})
+			return
+		}
+
+		for _, batchItem := range batchArray {
+			batchMap, ok := batchItem.(map[string]interface{})
+			if !ok {
+				continue
+			}
+
+			events, ok := batchMap["events"].([]interface{})
+			if !ok {
+				continue
+			}
+
+			for i, eventInterface := range events {
+				event, ok := eventInterface.(map[string]interface{})
+				if !ok {
+					continue
+				}
+
+				if _, exists := event["metaData"]; !exists {
+					event["metaData"] = make(map[string]interface{})
+				}
+
+				metadata, ok := event["metaData"].(map[string]interface{})
+				if !ok {
+					event["metaData"] = make(map[string]interface{})
+					metadata = event["metaData"].(map[string]interface{})
+				}
+
+				metadata["sdkProxy"] = Version
+				events[i] = event
+			}
+
+			batchMap["events"] = events
+		}
+
+		modifiedBody, err := json.Marshal(batchEvents)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"message": "Error marshaling modified request body: " + err.Error()})
+			return
+		}
+
 		// Passthrough proxy to the configured events api endpoint.
 		httpC := http.DefaultClient
-		req, err := http.NewRequest("POST", client.DevCycleOptions.EventsAPIURI+"/v1/events/batch", c.Request.Body)
+		req, err := http.NewRequest("POST", client.DevCycleOptions.EventsAPIURI+"/v1/events/batch", bytes.NewBuffer(modifiedBody))
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"message": "Error creating request, " + err.Error()})
+			c.JSON(http.StatusInternalServerError, gin.H{"message": "Error creating request: " + err.Error()})
 			return
 		}
 		req.Header.Set("Content-Type", "application/json")
 		req.Header.Set("Authorization", c.Request.Header.Get("Authorization"))
 		resp, err := httpC.Do(req)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"message": "Error sending request, " + err.Error()})
+			c.JSON(http.StatusInternalServerError, gin.H{"message": "Error sending request: " + err.Error()})
 			return
 		}
 		respBody, err := io.ReadAll(resp.Body)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"message": "Error reading response, " + err.Error()})
+			c.JSON(http.StatusInternalServerError, gin.H{"message": "Error reading response: " + err.Error()})
 			return
 		}
 		defer resp.Body.Close()

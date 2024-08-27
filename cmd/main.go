@@ -14,7 +14,7 @@ import (
 )
 
 const (
-	Version         = "0.1.0"
+	Version         = sdkproxy.Version
 	EnvConfigFormat = `
 This application can also be configured via the environment. The following environment
 variables can be used:

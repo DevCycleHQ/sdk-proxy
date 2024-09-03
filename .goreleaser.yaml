@@ -13,6 +13,17 @@ builds:
       - windows
       - darwin
 
+dockers:
+  - image_templates:
+    - "ghcr.io/devcyclehq/sdk-proxy:{{ .Version }}"
+    - "ghcr.io/devcyclehq/sdk-proxy:{{ .Tag }}"
+    - "ghcr.io/devcyclehq/sdk-proxy:v{{ .Major }}.{{ .Minor }}.{{ .Patch }}"
+    - "ghcr.io/devcyclehq/sdk-proxy:latest"
+    goos: linux
+    goarch: amd64
+    dockerfile: Dockerfile
+    skip_push: true
+
 archives:
   - format: tar.gz
     # The following template controls the format of the .tar.gz filenames

@@ -97,6 +97,7 @@ func BatchEvents() gin.HandlerFunc {
 			c.JSON(http.StatusInternalServerError, gin.H{"message": "Error reading request body: " + err.Error()})
 			return
 		}
+		defer c.Request.Body.Close()
 
 		var batchEvents map[string]interface{}
 		err = json.Unmarshal(body, &batchEvents)
@@ -204,7 +205,6 @@ func GetConfig(client *devcycle.Client, version ...string) gin.HandlerFunc {
 				if c.Request.RemoteAddr == "" {
 					hostname = fmt.Sprintf("unix:%s", instance.UnixSocketPath)
 				}
-				fmt.Println(c.Request)
 				if val, ok := config["sse"]; ok {
 					path := val.(map[string]interface{})["path"].(string)
 
@@ -256,7 +256,7 @@ func getUserFromBody(c *gin.Context) *devcycle.User {
 		})
 		return nil
 	}
-
+	defer c.Request.Body.Close()
 	err = json.Unmarshal(jsonBody, &user)
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
@@ -280,6 +280,8 @@ func getEventFromBody(c *gin.Context) *devcycle.UserDataAndEventsBody {
 		})
 		return nil
 	}
+	defer c.Request.Body.Close()
+
 	err = json.Unmarshal(jsonBody, &event)
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{

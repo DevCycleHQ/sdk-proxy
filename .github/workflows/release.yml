@@ -79,11 +79,11 @@ jobs:
           git push origin HEAD:main
 
       - name: Build and push Docker image
-        uses: docker/build-push-action@v4.0.0
+        uses: docker/build-push-action@v6.7.0
         with:
           context: .
           push: true
-          tags: ${{ steps.meta.outputs.tags }}
+          tags: ghcr.io/devcyclehq/sdk-proxy:${{ steps.prepare-release.outputs.next-release-tag }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max

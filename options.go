@@ -60,6 +60,7 @@ func (i *ProxyInstance) Close() error {
 }
 
 func (i *ProxyInstance) BuildDevCycleOptions() *devcycle.Options {
+	i.PlatformData.SdkType = "server"
 	options := devcycle.Options{
 		EnableEdgeDB:                 false,
 		EnableCloudBucketing:         false,

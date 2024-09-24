@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/devcyclehq/go-server-sdk/v2/api"
 	"github.com/launchdarkly/eventsource"
-	"io"
 	"log"
 	"os"
 	"strconv"
@@ -16,14 +15,17 @@ import (
 
 func NewBucketingProxyInstance(instance *ProxyInstance) (*ProxyInstance, error) {
 	gin.DisableConsoleColor()
-	logFile, err := os.OpenFile(instance.LogFile, os.O_CREATE|os.O_APPEND|os.O_RDWR, 0666)
-	if err != nil {
-		_ = fmt.Errorf("error opening log file: %s", err)
-		return nil, err
+	if instance.LogFile != "" {
+		logFile, err := os.OpenFile(instance.LogFile, os.O_CREATE|os.O_APPEND|os.O_RDWR, 0666)
+		if err != nil {
+			_ = fmt.Errorf("error opening log file: %s", err)
+			return nil, err
+		}
+		gin.DefaultWriter = logFile
+		log.SetOutput(logFile)
+	} else {
+		log.SetOutput(os.Stdout)
 	}
-	mw := io.MultiWriter(os.Stdout, logFile)
-	log.SetOutput(mw)
-	gin.DefaultWriter = mw
 	if instance.SSEEnabled {
 		instance.sseEvents = make(chan api.ClientEvent, 100)
 		instance.sseServer = eventsource.NewServer()
@@ -100,7 +102,9 @@ func sdkProxyMiddleware(instance *ProxyInstance) gin.HandlerFunc {
 func newRouter(client *devcycle.Client, instance *ProxyInstance) *gin.Engine {
 	r := gin.New()
 
-	r.Use(gin.Logger())
+	if instance.LogFile != "" {
+		r.Use(gin.Logger())
+	}
 	r.Use(gin.Recovery())
 	r.Use(devCycleMiddleware(client))
 	r.Use(sdkProxyMiddleware(instance))

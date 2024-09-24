@@ -17,6 +17,9 @@ preventing the need for network calls.
 The HTTP server mode is a 1:1 replacement for the Bucketing API used by all SDKs in cloud bucketing mode, or can be used
 directly without an SDK as an API.
 
+Logging can be configured to write to a file for both application logs, and HTTP access logs; or just writing application
+logs to `stdout`. By default, the application logs are written to `stdout`, and the HTTP logs are written to `/dev/null`.
+
 ### Docker
 
 The docker image published here is the base runtime version - expecting to be used as a base image for you to extend.

@@ -24,7 +24,6 @@ func NewBucketingProxyInstance(instance *ProxyInstance) (*ProxyInstance, error) 
 		gin.DefaultWriter = logFile
 		log.SetOutput(logFile)
 	} else {
-		gin.DefaultWriter = os.DevNull
 		log.SetOutput(os.Stdout)
 	}
 	if instance.SSEEnabled {
@@ -103,7 +102,9 @@ func sdkProxyMiddleware(instance *ProxyInstance) gin.HandlerFunc {
 func newRouter(client *devcycle.Client, instance *ProxyInstance) *gin.Engine {
 	r := gin.New()
 
-	r.Use(gin.Logger())
+	if instance.LogFile != "" {
+		r.Use(gin.Logger())
+	}
 	r.Use(gin.Recovery())
 	r.Use(devCycleMiddleware(client))
 	r.Use(sdkProxyMiddleware(instance))

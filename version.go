@@ -1,3 +1,3 @@
 package local_bucketing_proxy
 
-const Version = "2.2.6"
+const Version = "2.3.0"

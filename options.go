@@ -34,7 +34,7 @@ type ProxyInstance struct {
 	SSEEnabled            bool                  `json:"sseEnabled" envconfig:"SSE_ENABLED" default:"false" desc:"Whether to enable the SSE server. Requires setting sseHostname param too. Defaults to false."`
 	SSEHostname           string                `json:"sseHostname" envconfig:"SSE_HOSTNAME" desc:"The hostname to provide to clients to connect to for SSE requests. This must be reachable from the clients and can be either a DNS hostname or a raw IP address."`
 	SDKKey                string                `json:"sdkKey" required:"true" envconfig:"SDK_KEY" desc:"The Server SDK key to use for this instance."`
-	LogFile               string                `json:"logFile" default:"/var/log/devcycle.log" envconfig:"LOG_FILE" desc:"The path to the log file. Defaults to /var/log/devcycle.log"`
+	LogFile               string                `json:"logFile" default:"" envconfig:"LOG_FILE" desc:"The path to the log file."`
 	PlatformData          devcycle.PlatformData `json:"platformData" required:"true"`
 	SDKConfig             SDKConfig             `json:"sdkConfig" required:"true"`
 	dvcClient             *devcycle.Client
@@ -129,9 +129,6 @@ func (i *ProxyInstance) Default() {
 	i.SDKConfig.Default()
 	if i.HTTPEnabled && i.HTTPPort == 0 {
 		i.HTTPPort = 8080
-	}
-	if i.LogFile == "" {
-		i.LogFile = "/var/log/devcycle.log"
 	}
 	if i.UnixSocketEnabled {
 		if i.UnixSocketPath == "" {

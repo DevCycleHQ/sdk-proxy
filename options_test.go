@@ -41,7 +41,7 @@ func TestParseConfig(t *testing.T) {
 						UnixSocketEnabled:     false,
 						HTTPEnabled:           true,
 						SDKKey:                "dvc-test-key",
-						LogFile:               "/var/log/devcycle.log",
+						LogFile:               "",
 						PlatformData:          api.PlatformData{},
 						SDKConfig:             SDKConfig{},
 					},
@@ -82,7 +82,7 @@ func TestParseConfig(t *testing.T) {
 						UnixSocketPermissions: "0755",
 						HTTPEnabled:           false,
 						SDKKey:                "dvc-test-key",
-						LogFile:               "/var/log/devcycle.log",
+						LogFile:               "",
 						PlatformData: api.PlatformData{
 							SdkType:         "sdk type",
 							SdkVersion:      "v1.2.3",

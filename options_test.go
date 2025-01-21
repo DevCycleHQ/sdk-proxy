@@ -40,6 +40,7 @@ func TestParseConfig(t *testing.T) {
 						HTTPPort:              8080,
 						UnixSocketEnabled:     false,
 						HTTPEnabled:           true,
+						SSEEnabled:            true,
 						SDKKey:                "dvc-test-key",
 						LogFile:               "",
 						PlatformData:          api.PlatformData{},
@@ -81,6 +82,7 @@ func TestParseConfig(t *testing.T) {
 						UnixSocketEnabled:     true,
 						UnixSocketPermissions: "0755",
 						HTTPEnabled:           false,
+						SSEEnabled:            true,
 						SDKKey:                "dvc-test-key",
 						LogFile:               "",
 						PlatformData: api.PlatformData{
@@ -123,6 +125,7 @@ func TestParseConfig(t *testing.T) {
 						HTTPPort:          0,
 						UnixSocketEnabled: false,
 						HTTPEnabled:       false,
+						SSEEnabled:        false,
 						SDKKey:            "dvc-sample-key",
 						LogFile:           "",
 						PlatformData:      api.PlatformData{},
@@ -164,7 +167,7 @@ func TestParseConfig(t *testing.T) {
 						HTTPEnabled:       true,
 						SDKKey:            "dvc_YOUR_KEY_HERE",
 						LogFile:           "",
-						SSEEnabled:        true,
+						SSEEnabled:        false,
 						PlatformData: api.PlatformData{
 							SdkType:         "server",
 							SdkVersion:      "2.10.2",

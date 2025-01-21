@@ -1,4 +1,4 @@
-FROM golang:1.20-alpine
+FROM golang:1.21-alpine
 LABEL org.opencontainers.image.source=https://github.com/devcyclehq/sdk-proxy
 LABEL org.opencontainers.image.description="DevCycle SDK Proxy"
 LABEL org.opencontainers.image.licenses=MIT

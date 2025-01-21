@@ -164,7 +164,7 @@ func TestParseConfig(t *testing.T) {
 						HTTPEnabled:       true,
 						SDKKey:            "dvc_YOUR_KEY_HERE",
 						LogFile:           "",
-						SSEEnabled:        false,
+						SSEEnabled:        true,
 						PlatformData: api.PlatformData{
 							SdkType:         "server",
 							SdkVersion:      "2.10.2",

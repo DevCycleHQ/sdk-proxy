@@ -31,7 +31,7 @@ type ProxyInstance struct {
 	UnixSocketEnabled     bool                  `json:"unixSocketEnabled" envconfig:"UNIX_SOCKET_ENABLED" default:"false" desc:"Whether to enable the Unix socket. Defaults to false."`
 	HTTPPort              int                   `json:"httpPort" envconfig:"HTTP_PORT" default:"8080" desc:"The port to listen on for HTTP requests. Defaults to 8080."`
 	HTTPEnabled           bool                  `json:"httpEnabled" envconfig:"HTTP_ENABLED" default:"true" desc:"Whether to enable the HTTP server. Defaults to true."`
-	SSEEnabled            bool                  `json:"sseEnabled" envconfig:"SSE_ENABLED" default:"false" desc:"Whether to enable the SSE server. Requires setting sseHostname param too. Defaults to false."`
+	SSEEnabled            bool                  `json:"sseEnabled" envconfig:"SSE_ENABLED" default:"true" desc:"Whether to enable the SSE server. Requires setting sseHostname param too. Defaults to true."`
 	SSEHostname           string                `json:"sseHostname" envconfig:"SSE_HOSTNAME" desc:"The hostname to provide to clients to connect to for SSE requests. This must be reachable from the clients and can be either a DNS hostname or a raw IP address."`
 	SDKKey                string                `json:"sdkKey" required:"true" envconfig:"SDK_KEY" desc:"The Server SDK key to use for this instance."`
 	LogFile               string                `json:"logFile" default:"" envconfig:"LOG_FILE" desc:"The path to the log file."`
@@ -74,7 +74,7 @@ func (i *ProxyInstance) BuildDevCycleOptions() *devcycle.Options {
 		FlushEventQueueSize:          i.SDKConfig.FlushEventQueueSize,
 		ConfigCDNURI:                 i.SDKConfig.ConfigCDNURI,
 		EventsAPIURI:                 i.SDKConfig.EventsAPIURI,
-		EnableBetaRealtimeUpdates:    i.SSEEnabled,
+		DisableRealtimeUpdates:       !i.SSEEnabled,
 		AdvancedOptions: devcycle.AdvancedOptions{
 			OverridePlatformData: &i.PlatformData,
 			OverrideConfigWithV1: false,

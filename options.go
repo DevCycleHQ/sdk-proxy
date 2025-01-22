@@ -74,7 +74,7 @@ func (i *ProxyInstance) BuildDevCycleOptions() *devcycle.Options {
 		FlushEventQueueSize:          i.SDKConfig.FlushEventQueueSize,
 		ConfigCDNURI:                 i.SDKConfig.ConfigCDNURI,
 		EventsAPIURI:                 i.SDKConfig.EventsAPIURI,
-		DisableRealtimeUpdates:       i.SSEEnabled == false,
+		DisableRealtimeUpdates:       !i.SSEEnabled,
 		AdvancedOptions: devcycle.AdvancedOptions{
 			OverridePlatformData: &i.PlatformData,
 			OverrideConfigWithV1: false,

@@ -29,7 +29,7 @@ jobs:
       - uses: goreleaser/goreleaser-action@v4
         with:
           distribution: goreleaser
-          version: 'stable'
+          version: 'v2.6.0'
           args: release --clean
         env:
           GITHUB_TOKEN: ${{ secrets.AUTOMATION_USER_TOKEN }}

@@ -2,8 +2,6 @@ module github.com/devcyclehq/sdk-proxy
 
 go 1.21
 
-toolchain go1.23.5
-
 require (
 	github.com/devcyclehq/go-server-sdk/v2 v2.19.0
 	github.com/gin-gonic/gin v1.10.0

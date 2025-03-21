@@ -73,13 +73,16 @@ func Feature() gin.HandlerFunc {
 func Track() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		client := c.Value("devcycle").(*devcycle.Client)
-
+		ofIdentifier := c.Request.Header.Get("X-DevCycle-OpenFeature-SDK")
 		event := getEventFromBody(c)
 		for _, e := range event.Events {
 			if e.MetaData == nil {
 				e.MetaData = make(map[string]interface{})
 			}
 			e.MetaData["sdkProxy"] = Version
+			if ofIdentifier != "" {
+				e.MetaData["sdkPlatform"] = ofIdentifier
+			}
 			_, err := client.Track(event.User.User, e)
 			if err != nil {
 				c.JSON(http.StatusInternalServerError, gin.H{})

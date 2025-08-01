@@ -1,4 +1,4 @@
-package local_bucketing_proxy
+package sdk_proxy
 
 import (
 	"encoding/json"

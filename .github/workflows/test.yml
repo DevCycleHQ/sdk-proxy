@@ -26,5 +26,5 @@ jobs:
 
     - name: Build
       run: |
-        docker build -t local_bucketing_proxy .
-        docker run --rm local_bucketing_proxy --help
+        docker build -t sdk_proxy .
+        docker run --rm sdk_proxy --help

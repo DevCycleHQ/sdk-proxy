@@ -9,7 +9,7 @@ import (
 	"os/signal"
 	"syscall"
 
-	sdkproxy "github.com/devcyclehq/sdk-proxy"
+	sdkproxy "github.com/devcyclehq/sdk-proxy/v2"
 	"github.com/kelseyhightower/envconfig"
 )
 

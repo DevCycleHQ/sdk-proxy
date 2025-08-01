@@ -9,6 +9,6 @@ WORKDIR /usr/src/app
 
 COPY . .
 RUN go mod download
-RUN go build -v -o /usr/local/bin/devcycle-local-bucketing-proxy ./cmd
+RUN go build -v -o /usr/local/bin/devcycle-sdk-proxy ./cmd
 
-ENTRYPOINT ["/usr/local/bin/devcycle-local-bucketing-proxy"]
+ENTRYPOINT ["/usr/local/bin/devcycle-sdk-proxy"]

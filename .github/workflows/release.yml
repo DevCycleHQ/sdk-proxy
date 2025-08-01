@@ -26,6 +26,7 @@ on:
 permissions:
   contents: write
   packages: write
+  issues: write
 
 env:
   REGISTRY: ghcr.io
@@ -49,7 +50,7 @@ jobs:
         with:
           registry: ${{ env.REGISTRY }}
           username: devcycle-automation
-          password: ${{ secrets.AUTOMATION_USER_TOKEN }}
+          password: ${{ secrets.DOCKER_TOKEN }}
 
       - name: Extract metadata (tags, labels) for Docker
         id: meta

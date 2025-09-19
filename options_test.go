@@ -1,7 +1,9 @@
 package sdk_proxy
 
 import (
+	"fmt"
 	"os"
+	"strings"
 	"testing"
 	"time"
 
@@ -211,4 +213,105 @@ func TestParseConfig(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestProxyInstanceStringer(t *testing.T) {
+	t.Run("SDK key redaction", func(t *testing.T) {
+		// Create a test instance with a SDK key
+		instance := ProxyInstance{
+			SDKKey: "dvc_server_test_key_12345",
+		}
+
+		// Test the fmt.Stringer implementation
+		// using fmt.Sprintf to invoke the String() method
+		result := fmt.Sprintf("%+v", instance)
+
+		// Verify that the SDK key is redacted
+		if strings.Contains(result, "SDKKey:dvc_server_test_key_12345") {
+			t.Error("String() method should redact the SDK key, but it was found in the output")
+		}
+
+		// Verify that the redacted text is present
+		if !strings.Contains(result, "SDKKey:***REDACTED***") {
+			t.Error("String() method should contain '***REDACTED***' for the SDK key")
+		}
+
+		// Verify that the original instance's SDK key is not modified
+		if instance.SDKKey != "dvc_server_test_key_12345" {
+			t.Error("Original instance's SDK key should not be modified by String() method")
+		}
+	})
+
+	t.Run("empty SDK key redaction", func(t *testing.T) {
+		instance := ProxyInstance{
+			HTTPPort: 9090,
+			SDKKey:   "",
+		}
+		result := fmt.Sprintf("%+v", instance)
+		if !strings.Contains(result, "SDKKey:***REDACTED***") {
+			t.Error("String() method should still show '***REDACTED***' even with empty SDK key")
+		}
+	})
+
+	t.Run("value receiver doesn't modify original", func(t *testing.T) {
+		original := ProxyInstance{
+			SDKKey: "original_key_123",
+		}
+
+		// Call String method multiple times
+		result1 := fmt.Sprintf("%+v", original)
+		result2 := fmt.Sprintf("%+v", original)
+
+		// Both should be identical
+		if result1 != result2 {
+			t.Error("Multiple calls to String() should return identical results")
+		}
+
+		// Original should be unchanged
+		if original.SDKKey != "original_key_123" {
+			t.Error("Original instance should not be modified by String() calls")
+		}
+
+		// Both results should contain redacted key
+		if !strings.Contains(result1, "SDKKey:***REDACTED***") {
+			t.Error("First String() call should contain redacted key")
+		}
+		if !strings.Contains(result2, "SDKKey:***REDACTED***") {
+			t.Error("Second String() call should contain redacted key")
+		}
+	})
+
+	t.Run("other fields remain visible", func(t *testing.T) {
+		instance := ProxyInstance{
+			UnixSocketPath:        "/tmp/test.sock",
+			UnixSocketPermissions: "0755",
+			HTTPPort:              8080,
+			SDKKey:                "sensitive_key",
+			LogFile:               "/tmp/test.log",
+		}
+
+		result := fmt.Sprintf("%+v", instance)
+
+		// Verify that other fields are still present
+		expectedFields := []string{
+			"/tmp/test.sock",
+			"0755",
+			"8080",
+			"/tmp/test.log",
+		}
+
+		for _, field := range expectedFields {
+			if !strings.Contains(result, field) {
+				t.Errorf("String() method should contain field value '%s', but it was not found", field)
+			}
+		}
+
+		// SDK key should still be redacted
+		if !strings.Contains(result, "SDKKey:***REDACTED***") {
+			t.Error("SDK key should be redacted")
+		}
+		if strings.Contains(result, "sensitive_key") {
+			t.Error("Sensitive key should not appear in string output")
+		}
+	})
 }

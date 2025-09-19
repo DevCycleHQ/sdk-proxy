@@ -3,8 +3,6 @@ package sdk_proxy
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/devcyclehq/go-server-sdk/v2/api"
-	"github.com/launchdarkly/eventsource"
 	"io"
 	"log"
 	"net/http"
@@ -13,8 +11,10 @@ import (
 	"time"
 
 	devcycle "github.com/devcyclehq/go-server-sdk/v2"
+	"github.com/devcyclehq/go-server-sdk/v2/api"
 	"github.com/gin-gonic/gin"
 	"github.com/kelseyhightower/envconfig"
+	"github.com/launchdarkly/eventsource"
 )
 
 const (
@@ -147,6 +147,14 @@ func (i *ProxyInstance) Default() {
 		}
 	}
 }
+
+func (i ProxyInstance) String() string {
+	// Use a value receiver to override the SDKKey for logging
+	type alias ProxyInstance
+	i.SDKKey = "***REDACTED***"
+	return fmt.Sprintf("%+v", (alias)(i))
+}
+
 func (c *ProxyConfig) Default() {
 	for i := range c.Instances {
 		c.Instances[i].Default()

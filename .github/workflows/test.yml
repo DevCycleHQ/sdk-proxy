@@ -28,3 +28,7 @@ jobs:
       run: |
         docker build -t sdk_proxy .
         docker run --rm sdk_proxy --help
+
+    - name: Test
+      run: |
+        docker compose run test

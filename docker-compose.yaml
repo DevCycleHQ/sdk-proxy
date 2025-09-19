@@ -1,0 +1,35 @@
+services:
+  sdk-proxy:
+    build: .
+    image: sdk_proxy
+    environment:
+      - DEVCYCLE_PROXY_UNIX_SOCKET_ENABLED=true
+      - DEVCYCLE_PROXY_UNIX_SOCKET_PATH=/mnt/socket
+      - DEVCYCLE_PROXY_UNIX_SOCKET_PERMISSIONS=0777
+      - DEVCYCLE_PROXY_DEBUG=true
+      - DEVCYCLE_PROXY_SDK_KEY=dvc_server_token_hash
+    volumes:
+      - socket_volume:/mnt
+
+  test:
+    image: curlimages/curl:latest
+    volumes:
+      - socket_volume:/mnt
+    profiles:
+      - test
+    depends_on:
+      sdk-proxy:
+        condition: service_started
+    entrypoint:
+      - sh
+      - -ec
+      - |
+        echo "Waiting for the sdk-proxy to be ready"
+        (set -x; sleep 5)
+        echo "Testing /healthz endpoint through HTTP"
+        (set -x; curl --fail -sv http://sdk-proxy:8080/healthz)
+        echo "Testing /healthz endpoint through UNIX socket"
+        (set -x; curl --fail -sv --unix-socket /mnt/socket http://localhost/healthz)
+
+volumes:
+  socket_volume:

@@ -26,7 +26,9 @@ variables can be used:
 
 func main() {
 	var configPath string
+	var showConfig bool
 	flag.StringVar(&configPath, "config", "", "The path to a JSON config file.")
+	flag.BoolVar(&showConfig, "show-config", false, "Show proxy instance configuration on start.")
 
 	flag.Usage = func() {
 		log.Printf("DevCycle Local Bucketing Proxy Version %s\n", Version)
@@ -49,7 +51,9 @@ func main() {
 	}
 	// Create router for each instance
 	for _, instance := range config.Instances {
-		log.Printf("Creating bucketing proxy instance: %+v", instance)
+		if showConfig {
+			log.Printf("Creating bucketing proxy instance: %+v", instance)
+		}
 
 		// Create client
 		_, err = sdkproxy.NewBucketingProxyInstance(instance)

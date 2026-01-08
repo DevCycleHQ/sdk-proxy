@@ -2,12 +2,13 @@ package sdk_proxy
 
 import (
 	"fmt"
-	"github.com/devcyclehq/go-server-sdk/v2/api"
-	"github.com/launchdarkly/eventsource"
 	"log"
 	"os"
 	"strconv"
 	"time"
+
+	"github.com/devcyclehq/go-server-sdk/v2/api"
+	"github.com/launchdarkly/eventsource"
 
 	devcycle "github.com/devcyclehq/go-server-sdk/v2"
 	"github.com/gin-gonic/gin"
@@ -32,6 +33,17 @@ func NewBucketingProxyInstance(instance *ProxyInstance) (*ProxyInstance, error) 
 		instance.sseServer.ReplayAll = false
 		eventsource.NewSliceRepository()
 		go instance.EventRebroadcaster()
+		if instance.SSEHostname == "" {
+			name, err := os.Hostname()
+			if err != nil {
+				instance.SSEHostname = "localhost"
+			} else {
+				instance.SSEHostname = name
+			}
+			if instance.SSEXForwardedOnly {
+				instance.SSEHostname = "DYNAMIC-REQUEST-HOST"
+			}
+		}
 		log.Printf("Initialized SSE server at %s", instance.SSEHostname)
 	}
 

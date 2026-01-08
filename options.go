@@ -3,14 +3,15 @@ package sdk_proxy
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/devcyclehq/go-server-sdk/v2/api"
-	"github.com/launchdarkly/eventsource"
 	"io"
 	"log"
 	"net/http"
 	"os"
 	"runtime"
 	"time"
+
+	"github.com/devcyclehq/go-server-sdk/v2/api"
+	"github.com/launchdarkly/eventsource"
 
 	devcycle "github.com/devcyclehq/go-server-sdk/v2"
 	"github.com/gin-gonic/gin"
@@ -33,6 +34,8 @@ type ProxyInstance struct {
 	HTTPEnabled           bool                  `json:"httpEnabled" envconfig:"HTTP_ENABLED" default:"true" desc:"Whether to enable the HTTP server. Defaults to true."`
 	SSEEnabled            bool                  `json:"sseEnabled" envconfig:"SSE_ENABLED" default:"true" desc:"Whether to enable the SSE server. Requires setting sseHostname param too. Defaults to true."`
 	SSEHostname           string                `json:"sseHostname" envconfig:"SSE_HOSTNAME" desc:"The hostname to provide to clients to connect to for SSE requests. This must be reachable from the clients and can be either a DNS hostname or a raw IP address."`
+	SSEXForwardedOnly     bool                  `json:"sseXForwardedOnly" envconfig:"SSE_X_FORWARDED_ONLY" default:"false" desc:"Whether to use the X-Forwarded... headers to respond with the SSEHostname. Defaults to false."`
+	SSEHttps              bool                  `json:"sseHTTPS" envconfig:"SSE_HTTPS" default:"false" desc:"Whether to use HTTPS scheme for SSE connections. Defaults to false."`
 	SDKKey                string                `json:"sdkKey" required:"true" envconfig:"SDK_KEY" desc:"The Server SDK key to use for this instance."`
 	LogFile               string                `json:"logFile" default:"" envconfig:"LOG_FILE" desc:"The path to the log file."`
 	PlatformData          devcycle.PlatformData `json:"platformData" required:"true"`
@@ -118,6 +121,9 @@ func (i *ProxyInstance) BypassSDKConfig(version string) (config []byte, etag, la
 
 func (i *ProxyInstance) EventRebroadcaster() {
 	for event := range i.sseEvents {
+		if event.EventType == api.ClientEventType_InternalSSEConnected {
+			log.Printf("Connected to DevCycle SSE for rebroadcasting.\n")
+		}
 		if event.EventType == api.ClientEventType_RealtimeUpdates {
 			i.sseServer.Publish([]string{i.SDKKey}, event.EventData.(eventsource.Event))
 			log.Printf("Rebroadcasting SSE event: %s\n", event.EventData.(eventsource.Event).Data())
@@ -140,7 +146,7 @@ func (i *ProxyInstance) Default() {
 	}
 	if i.SSEEnabled && i.SSEHostname == "" {
 		hostname, err := os.Hostname()
-		if err != nil {
+		if err != nil || hostname == "" {
 			i.SSEHostname = "localhost"
 		} else {
 			i.SSEHostname = hostname

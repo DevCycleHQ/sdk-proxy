@@ -197,17 +197,41 @@ func GetConfig(client *devcycle.Client, version ...string) gin.HandlerFunc {
 				return
 			}
 			if instance.SSEEnabled {
+				secure := ""
+				if instance.SSEHttps {
+					secure = "s"
+				}
 				config := map[string]interface{}{}
 				err = json.Unmarshal(rawConfig, &config)
 				if err != nil {
 					c.JSON(http.StatusInternalServerError, gin.H{})
 					return
 				}
-				hostname := fmt.Sprintf("http://%s:%d", instance.SSEHostname, instance.HTTPPort)
-				// This is the only indicator that a unix socket request was made
-				if c.Request.RemoteAddr == "" {
-					hostname = fmt.Sprintf("unix:%s", instance.UnixSocketPath)
+				hostname := ""
+				if instance.SSEXForwardedOnly {
+					xforwardedHost := c.Request.Header.Get("X-Forwarded-Host")
+					xforwardedProto := c.Request.Header.Get("X-Forwarded-Proto")
+					if xforwardedHost != "" {
+						if xforwardedProto != "" {
+							hostname = fmt.Sprintf("%s://%s", xforwardedProto, xforwardedHost)
+						} else {
+							if instance.SSEHttps {
+								hostname = fmt.Sprintf("https://%s", xforwardedHost)
+							}
+						}
+					} else {
+						c.JSON(http.StatusForbidden, gin.H{})
+						return
+					}
+				} else {
+
+					hostname = fmt.Sprintf("http%s://%s:%d", secure, instance.SSEHostname, instance.HTTPPort)
+					// This is the only indicator that a unix socket request was made
+					if c.Request.RemoteAddr == "" {
+						hostname = fmt.Sprintf("unix:%s", instance.UnixSocketPath)
+					}
 				}
+
 				if val, ok := config["sse"]; ok {
 					path := val.(map[string]interface{})["path"].(string)
 

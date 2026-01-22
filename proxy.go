@@ -40,7 +40,7 @@ func NewBucketingProxyInstance(instance *ProxyInstance) (*ProxyInstance, error) 
 			} else {
 				instance.SSEHostname = name
 			}
-			if instance.SSEXForwardedOnly {
+			if instance.SSEEndpointUseHeaders {
 				instance.SSEHostname = "DYNAMIC-REQUEST-HOST"
 			}
 		}

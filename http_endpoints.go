@@ -208,7 +208,7 @@ func GetConfig(client *devcycle.Client, version ...string) gin.HandlerFunc {
 					return
 				}
 				hostname := ""
-				if instance.SSEXForwardedOnly {
+				if instance.SSEEndpointUseHeaders {
 					xforwardedHost := c.Request.Header.Get("X-Forwarded-Host")
 					xforwardedProto := c.Request.Header.Get("X-Forwarded-Proto")
 					if xforwardedHost != "" {
@@ -220,12 +220,21 @@ func GetConfig(client *devcycle.Client, version ...string) gin.HandlerFunc {
 							}
 						}
 					} else {
-						c.JSON(http.StatusForbidden, gin.H{})
-						return
+						hostHeader := c.Request.Host
+						if hostHeader != "" {
+							if xforwardedProto != "" {
+								hostname = fmt.Sprintf("%s://%s", xforwardedProto, hostHeader)
+							} else {
+								hostname = fmt.Sprintf("http%s://%s", secure, hostHeader)
+							}
+						}
 					}
 				} else {
-
-					hostname = fmt.Sprintf("http%s://%s:%d", secure, instance.SSEHostname, instance.HTTPPort)
+					port := instance.SSEPort
+					if port == 0 {
+						port = instance.HTTPPort
+					}
+					hostname = fmt.Sprintf("http%s://%s:%d", secure, instance.SSEHostname, port)
 					// This is the only indicator that a unix socket request was made
 					if c.Request.RemoteAddr == "" {
 						hostname = fmt.Sprintf("unix:%s", instance.UnixSocketPath)

@@ -34,8 +34,9 @@ type ProxyInstance struct {
 	HTTPEnabled           bool                  `json:"httpEnabled" envconfig:"HTTP_ENABLED" default:"true" desc:"Whether to enable the HTTP server. Defaults to true."`
 	SSEEnabled            bool                  `json:"sseEnabled" envconfig:"SSE_ENABLED" default:"true" desc:"Whether to enable the SSE server. Requires setting sseHostname param too. Defaults to true."`
 	SSEHostname           string                `json:"sseHostname" envconfig:"SSE_HOSTNAME" desc:"The hostname to provide to clients to connect to for SSE requests. This must be reachable from the clients and can be either a DNS hostname or a raw IP address."`
-	SSEXForwardedOnly     bool                  `json:"sseXForwardedOnly" envconfig:"SSE_X_FORWARDED_ONLY" default:"false" desc:"Whether to use the X-Forwarded... headers to respond with the SSEHostname. Defaults to false."`
+	SSEEndpointUseHeaders bool                  `json:"SSEEndpointUseHeaders" envconfig:"SSE_ENDPOINT_USE_HEADERS" default:"false" desc:"Whether to use the X-Forwarded... or Host headers to respond with the SSEHostname. Defaults to false."`
 	SSEHttps              bool                  `json:"sseHTTPS" envconfig:"SSE_HTTPS" default:"false" desc:"Whether to use HTTPS scheme for SSE connections. Defaults to false."`
+	SSEPort               int                   `json:"ssePort" envconfig:"SSE_PORT" desc:"The port to provide to clients to connect to for SSE requests. If not set, defaults to the same port as the HTTP server."`
 	SDKKey                string                `json:"sdkKey" required:"true" envconfig:"SDK_KEY" desc:"The Server SDK key to use for this instance."`
 	LogFile               string                `json:"logFile" default:"" envconfig:"LOG_FILE" desc:"The path to the log file."`
 	PlatformData          devcycle.PlatformData `json:"platformData" required:"true"`

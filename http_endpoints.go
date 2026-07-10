@@ -100,7 +100,7 @@ func BatchEvents() gin.HandlerFunc {
 			c.JSON(http.StatusInternalServerError, gin.H{"message": "Error reading request body: " + err.Error()})
 			return
 		}
-		defer c.Request.Body.Close()
+		defer c.Request.Body.Close() //nolint:errcheck
 
 		var batchEvents map[string]interface{}
 		err = json.Unmarshal(body, &batchEvents)
@@ -174,7 +174,7 @@ func BatchEvents() gin.HandlerFunc {
 			c.JSON(http.StatusInternalServerError, gin.H{"message": "Error reading response: " + err.Error()})
 			return
 		}
-		defer resp.Body.Close()
+		defer resp.Body.Close() //nolint:errcheck
 		c.Data(resp.StatusCode, resp.Header.Get("Content-Type"), respBody)
 	}
 }
@@ -292,7 +292,7 @@ func getUserFromBody(c *gin.Context) *devcycle.User {
 		})
 		return nil
 	}
-	defer c.Request.Body.Close()
+	defer c.Request.Body.Close() //nolint:errcheck
 	err = json.Unmarshal(jsonBody, &user)
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
@@ -316,7 +316,7 @@ func getEventFromBody(c *gin.Context) *devcycle.UserDataAndEventsBody {
 		})
 		return nil
 	}
-	defer c.Request.Body.Close()
+	defer c.Request.Body.Close() //nolint:errcheck
 
 	err = json.Unmarshal(jsonBody, &event)
 	if err != nil {

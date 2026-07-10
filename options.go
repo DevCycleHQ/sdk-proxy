@@ -111,7 +111,7 @@ func (i *ProxyInstance) BypassSDKConfig(version string) (config []byte, etag, la
 	}
 
 	body, err := io.ReadAll(resp.Body)
-	defer resp.Body.Close()
+	defer resp.Body.Close() //nolint:errcheck
 	if err != nil {
 		return i.bypassConfig, "", ""
 	}
@@ -230,7 +230,7 @@ func ParseConfig(configPath string) (*ProxyConfig, error) {
 			}
 			err = os.WriteFile(initialConfig.ConfigPath, sampleConfigData, 0644)
 			if err != nil {
-				return nil, fmt.Errorf("Failed to write sample config to file: %w", err)
+				return nil, fmt.Errorf("failed to write sample config to file: %w", err)
 			}
 			log.Fatal("Add your SDK key to the config file and run this command again.")
 		}

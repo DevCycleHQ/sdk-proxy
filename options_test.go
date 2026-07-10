@@ -206,7 +206,7 @@ func TestParseConfig(t *testing.T) {
 			} else {
 				require.NoError(t, err)
 				if !assert.Equal(t, test.expected, actual) {
-					pretty.Println(test.name, actual)
+					_, _ = pretty.Println(test.name, actual)
 				}
 			}
 		})

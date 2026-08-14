@@ -16,17 +16,17 @@ jobs:
   goreleaser:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
       - run: |
           git fetch --force --tags
           latestTag=$(git describe --tags `git rev-list --tags --max-count=1`)
           git checkout $latestTag
-      - uses: actions/setup-go@v4
+      - uses: actions/setup-go@v7
         with:
           go-version: stable
-      - uses: goreleaser/goreleaser-action@v4
+      - uses: goreleaser/goreleaser-action@v7
         with:
           distribution: goreleaser
           version: 'v2.6.0'

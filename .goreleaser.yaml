@@ -12,18 +12,6 @@ builds:
       - linux
       - windows
       - darwin
-#
-#dockers:
-#  - image_templates:
-#    - "ghcr.io/devcyclehq/sdk-proxy:{{ .Version }}"
-#    - "ghcr.io/devcyclehq/sdk-proxy:{{ .Tag }}"
-#    - "ghcr.io/devcyclehq/sdk-proxy:v{{ .Major }}.{{ .Minor }}.{{ .Patch }}"
-#    - "ghcr.io/devcyclehq/sdk-proxy:latest"
-#    goos: linux
-#    goarch: amd64
-#    dockerfile: Dockerfile
-#    skip_push: false
-
 archives:
   - format: tar.gz
     # The following template controls the format of the .tar.gz filenames
@@ -73,3 +61,6 @@ nfpms:
     suggests:
       - nginx
     version_metadata: git
+release:
+  # The GitHub release is created by release-please; only attach artifacts
+  mode: keep-existing

@@ -2,6 +2,8 @@
 
 # JSON config files
 /*.json
+!/release-please-config.json
+!/.release-please-manifest.json
 
 # Compiled Object files, Static and Dynamic libs (Shared Objects)
 *.o
